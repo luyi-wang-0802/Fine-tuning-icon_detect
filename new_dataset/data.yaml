@@ -1,0 +1,6 @@
+path: ./new_dataset
+train: images/train
+val: images/val
+
+names:
+  0: interactive_icon

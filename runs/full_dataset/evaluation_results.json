@@ -1,0 +1,30 @@
+{
+  "training_mode": "split_dataset",
+  "dataset": "W:\\hiwi\\post_training\\new_dataset",
+  "train_count": 252,
+  "val_count": 10,
+  "total_epochs": 100,
+  "timestamp": "2025-11-28T01:33:40.389640",
+  "validation_metrics": {
+    "mAP50": 0.9823455484925507,
+    "mAP50_95": 0.8529128124918369,
+    "precision": 0.9868871056624581,
+    "recall": 0.9603223088906854,
+    "f1": 0.9734235022088858
+  },
+  "train_metrics": {
+    "mAP50": 0.9813129626776687,
+    "mAP50_95": 0.8592768823130508,
+    "precision": 0.9862339395378626,
+    "recall": 0.9581103638303557,
+    "f1": 0.9719687577920897
+  },
+  "overfitting_analysis": {
+    "train_val_diff": -0.001032585814882081,
+    "status": "good"
+  },
+  "model_paths": {
+    "best": "W:\\hiwi\\post_training\\runs\\split_train\\icon_detect_split_dataset\\weights\\best.pt",
+    "last": "W:\\hiwi\\post_training\\runs\\split_train\\icon_detect_split_dataset\\weights\\last.pt"
+  }
+}
