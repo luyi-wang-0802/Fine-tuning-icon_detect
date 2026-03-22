@@ -1,50 +1,37 @@
-import cv2
+import argparse
 import json
-import numpy as np
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from ultralytics import YOLO
+from typing import Dict, List, Tuple
+
+import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 from tqdm import tqdm
-from dataclasses import dataclass, asdict
-from typing import List, Dict, Tuple, Optional
+from ultralytics import YOLO
 
 
-# -----------------------------
-# Config
-# -----------------------------
+ROOT = Path(__file__).parent
+
+
 @dataclass
 class EvalConfig:
     before_model_path: Path
     after_model_path: Path
     test_images_dir: Path
     test_labels_dir: Path
-
-    # Evaluation sweep
-    conf_thresholds: List[float] = None
-    iou_match_thresholds: List[float] = None  # IoU for TP match (not NMS)
-    # Inference settings (fixed for reproducibility)
-    infer_conf_min: float = 0.001            # collect almost-all predictions
-    nms_iou: float = 0.7
-    max_det: int = 500
-
-    # Output
-    output_dir: Path = Path("model_comparison_results_v2")
-    save_error_examples: bool = True
-    num_error_images: int = 50               # per category (FP / FN / both)
-    draw_iou_match_threshold: float = 0.5    # which IoU to use for error visualization
-    draw_conf_threshold: float = 0.5         # which conf to use for error visualization
-
-    def __post_init__(self):
-        if self.conf_thresholds is None:
-            # wide sweep; you can adjust granularity
-            self.conf_thresholds = [round(x, 3) for x in np.linspace(0.05, 0.95, 19).tolist()]
-        if self.iou_match_thresholds is None:
-            self.iou_match_thresholds = [0.3, 0.5]
+    output_dir: Path
+    conf_thresholds: List[float]
+    iou_match_thresholds: List[float]
+    infer_conf_min: float
+    nms_iou: float
+    max_det: int
+    save_error_examples: bool
+    num_error_images: int
+    draw_iou_match_threshold: float
+    draw_conf_threshold: float
 
 
-# -----------------------------
-# Helpers
-# -----------------------------
 def calculate_iou_xyxy(box1: np.ndarray, box2: np.ndarray) -> float:
     x1_min, y1_min, x1_max, y1_max = box1
     x2_min, y2_min, x2_max, y2_max = box2
@@ -60,10 +47,6 @@ def calculate_iou_xyxy(box1: np.ndarray, box2: np.ndarray) -> float:
 
 
 def load_ground_truth_yolo(label_path: Path, img_w: int, img_h: int) -> np.ndarray:
-    """
-    Returns: (N,4) xyxy ground truth boxes. One-class use-case; ignores cls_id.
-    YOLO format: cls x_center y_center width height (normalized)
-    """
     boxes = []
     if label_path.exists():
         with open(label_path, "r", encoding="utf-8") as f:
@@ -71,7 +54,6 @@ def load_ground_truth_yolo(label_path: Path, img_w: int, img_h: int) -> np.ndarr
                 parts = line.strip().split()
                 if len(parts) < 5:
                     continue
-                # cls_id = int(parts[0])  # ignored (one class)
                 xc = float(parts[1]) * img_w
                 yc = float(parts[2]) * img_h
                 bw = float(parts[3]) * img_w
@@ -91,13 +73,6 @@ def match_predictions_to_gt(
     gt_xyxy: np.ndarray,
     iou_thr: float,
 ) -> Tuple[int, int, int, List[float], List[int], List[int]]:
-    """
-    Greedy one-to-one matching:
-      - For each prediction, assign to best unmatched GT
-      - TP if IoU >= iou_thr, else FP
-      - FN = remaining unmatched GT
-    Returns: tp, fp, fn, matched_ious, fp_pred_indices, fn_gt_indices
-    """
     if pred_xyxy.size == 0 and gt_xyxy.size == 0:
         return 0, 0, 0, [], [], []
     if pred_xyxy.size == 0:
@@ -134,19 +109,16 @@ def match_predictions_to_gt(
 
 
 def calc_metrics(tp: int, fp: int, fn: int) -> Dict[str, float]:
-    p = tp / (tp + fp) if (tp + fp) > 0 else 0.0
-    r = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-    f1 = (2 * p * r / (p + r)) if (p + r) > 0 else 0.0
-    return {"precision": float(p), "recall": float(r), "f1": float(f1)}
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0.0
+    return {"precision": float(precision), "recall": float(recall), "f1": float(f1)}
 
 
-def ensure_dir(p: Path) -> None:
-    p.mkdir(parents=True, exist_ok=True)
+def ensure_dir(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
 
 
-# -----------------------------
-# Core evaluation
-# -----------------------------
 def collect_predictions_once(
     model: YOLO,
     image_files: List[Path],
@@ -155,18 +127,6 @@ def collect_predictions_once(
     nms_iou: float,
     max_det: int,
 ) -> Dict[str, Dict]:
-    """
-    Run inference once with very low conf threshold to collect predictions, then reuse for all eval thresholds.
-    Returns dict keyed by image stem:
-      {
-        "img_path": Path,
-        "img_w": int,
-        "img_h": int,
-        "gt": (N,4),
-        "pred_xyxy": (M,4),
-        "pred_conf": (M,)
-      }
-    """
     cache: Dict[str, Dict] = {}
 
     for img_path in tqdm(image_files, desc="Collecting predictions", ncols=100):
@@ -176,14 +136,7 @@ def collect_predictions_once(
         h, w = img.shape[:2]
         gt = load_ground_truth_yolo(labels_dir / f"{img_path.stem}.txt", w, h)
 
-        # Inference
-        res = model(
-            str(img_path),
-            conf=infer_conf_min,
-            iou=nms_iou,
-            max_det=max_det,
-            verbose=False
-        )[0]
+        res = model(str(img_path), conf=infer_conf_min, iou=nms_iou, max_det=max_det, verbose=False)[0]
 
         if res.boxes is not None and len(res.boxes) > 0:
             pred_xyxy = res.boxes.xyxy.cpu().numpy().astype(np.float32)
@@ -204,14 +157,7 @@ def collect_predictions_once(
     return cache
 
 
-def evaluate_from_cache(
-    cache: Dict[str, Dict],
-    conf_thr: float,
-    iou_match_thr: float,
-) -> Dict:
-    """
-    Evaluate at (conf_thr, iou_match_thr) using cached predictions.
-    """
+def evaluate_from_cache(cache: Dict[str, Dict], conf_thr: float, iou_match_thr: float) -> Dict:
     tp_total = fp_total = fn_total = 0
     ious_all: List[float] = []
     num_preds_per_img = []
@@ -223,19 +169,18 @@ def evaluate_from_cache(
         pred_conf = item["pred_conf"]
 
         keep = pred_conf >= conf_thr
-        pxy = pred_xyxy[keep] if pred_xyxy.size else pred_xyxy
+        filtered_pred = pred_xyxy[keep] if pred_xyxy.size else pred_xyxy
 
-        tp, fp, fn, matched_ious, _, _ = match_predictions_to_gt(pxy, gt, iou_match_thr)
+        tp, fp, fn, matched_ious, _, _ = match_predictions_to_gt(filtered_pred, gt, iou_match_thr)
         tp_total += tp
         fp_total += fp
         fn_total += fn
         ious_all.extend(matched_ious)
-
-        num_preds_per_img.append(int(len(pxy)))
+        num_preds_per_img.append(int(len(filtered_pred)))
         num_gt_per_img.append(int(len(gt)))
 
     metrics = calc_metrics(tp_total, fp_total, fn_total)
-    out = {
+    return {
         "conf_thr": float(conf_thr),
         "iou_match_thr": float(iou_match_thr),
         "tp": int(tp_total),
@@ -244,18 +189,13 @@ def evaluate_from_cache(
         "precision": metrics["precision"],
         "recall": metrics["recall"],
         "f1": metrics["f1"],
-        "mean_iou_of_tps": float(np.mean(ious_all)) if len(ious_all) else 0.0,
+        "mean_iou_of_tps": float(np.mean(ious_all)) if ious_all else 0.0,
         "avg_preds_per_img": float(np.mean(num_preds_per_img)) if num_preds_per_img else 0.0,
         "avg_gts_per_img": float(np.mean(num_gt_per_img)) if num_gt_per_img else 0.0,
     }
-    return out
 
 
-def sweep_eval(
-    cache: Dict[str, Dict],
-    conf_thresholds: List[float],
-    iou_match_thresholds: List[float],
-) -> List[Dict]:
+def sweep_eval(cache: Dict[str, Dict], conf_thresholds: List[float], iou_match_thresholds: List[float]) -> List[Dict]:
     rows = []
     for iou_thr in iou_match_thresholds:
         for conf_thr in conf_thresholds:
@@ -264,32 +204,20 @@ def sweep_eval(
 
 
 def pick_operating_points(rows: List[Dict]) -> Dict[str, Dict]:
-    """
-    Choose:
-      - best_f1 per IoU match threshold
-      - best_precision subject to recall>=x (optional)
-      - best_recall subject to precision>=x (optional)
-    Here keep it simple: best F1 for each IoU.
-    """
     best = {}
     by_iou: Dict[float, List[Dict]] = {}
-    for r in rows:
-        by_iou.setdefault(r["iou_match_thr"], []).append(r)
+    for row in rows:
+        by_iou.setdefault(row["iou_match_thr"], []).append(row)
 
-    for iou_thr, lst in by_iou.items():
-        best_f1 = max(lst, key=lambda x: x["f1"])
-        best[f"best_f1_iou_{iou_thr}"] = best_f1
-
+    for iou_thr, candidates in by_iou.items():
+        best[f"best_f1_iou_{iou_thr}"] = max(candidates, key=lambda item: item["f1"])
     return best
 
 
-# -----------------------------
-# Error visualization
-# -----------------------------
 def draw_boxes(img: np.ndarray, boxes: np.ndarray, color: Tuple[int, int, int], label: str) -> np.ndarray:
     out = img.copy()
-    for b in boxes:
-        x1, y1, x2, y2 = [int(round(v)) for v in b.tolist()]
+    for box in boxes:
+        x1, y1, x2, y2 = [int(round(v)) for v in box.tolist()]
         cv2.rectangle(out, (x1, y1), (x2, y2), color, 2)
         cv2.putText(out, label, (x1, max(0, y1 - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1, cv2.LINE_AA)
     return out
@@ -302,12 +230,6 @@ def save_error_examples(
     iou_match_thr: float,
     num_images: int,
 ) -> None:
-    """
-    Save images with:
-      - FP boxes (pred that didn't match any GT)
-      - FN boxes (GT not matched by any pred)
-      - Both overlays
-    """
     ensure_dir(out_dir / "errors_fp")
     ensure_dir(out_dir / "errors_fn")
     ensure_dir(out_dir / "errors_both")
@@ -326,62 +248,50 @@ def save_error_examples(
         gt = item["gt"]
         pred_xyxy = item["pred_xyxy"]
         pred_conf = item["pred_conf"]
-
         keep = pred_conf >= conf_thr
-        pxy = pred_xyxy[keep] if pred_xyxy.size else pred_xyxy
+        filtered_pred = pred_xyxy[keep] if pred_xyxy.size else pred_xyxy
 
-        tp, fp, fn, _, fp_pred_idx, fn_gt_idx = match_predictions_to_gt(pxy, gt, iou_match_thr)
+        _, _, _, _, fp_pred_idx, fn_gt_idx = match_predictions_to_gt(filtered_pred, gt, iou_match_thr)
+        fp_boxes = filtered_pred[fp_pred_idx] if fp_pred_idx else np.zeros((0, 4), dtype=np.float32)
+        fn_boxes = gt[fn_gt_idx] if fn_gt_idx else np.zeros((0, 4), dtype=np.float32)
 
-        fp_boxes = pxy[fp_pred_idx] if len(fp_pred_idx) else np.zeros((0, 4), dtype=np.float32)
-        fn_boxes = gt[fn_gt_idx] if len(fn_gt_idx) else np.zeros((0, 4), dtype=np.float32)
-
-        # FP-only
         if fp_saved < num_images and len(fp_boxes) > 0:
-            vis = draw_boxes(img, fp_boxes, (0, 0, 255), "FP")  # red
-            out_path = out_dir / "errors_fp" / f"{img_path.stem}_fp.png"
-            cv2.imwrite(str(out_path), vis)
+            vis = draw_boxes(img, fp_boxes, (0, 0, 255), "FP")
+            cv2.imwrite(str(out_dir / "errors_fp" / f"{img_path.stem}_fp.png"), vis)
             fp_saved += 1
 
-        # FN-only
         if fn_saved < num_images and len(fn_boxes) > 0:
-            vis = draw_boxes(img, fn_boxes, (255, 0, 0), "FN")  # blue
-            out_path = out_dir / "errors_fn" / f"{img_path.stem}_fn.png"
-            cv2.imwrite(str(out_path), vis)
+            vis = draw_boxes(img, fn_boxes, (255, 0, 0), "FN")
+            cv2.imwrite(str(out_dir / "errors_fn" / f"{img_path.stem}_fn.png"), vis)
             fn_saved += 1
 
-        # Both
         if both_saved < num_images and (len(fp_boxes) > 0 or len(fn_boxes) > 0):
             vis = img.copy()
             if len(fp_boxes) > 0:
                 vis = draw_boxes(vis, fp_boxes, (0, 0, 255), "FP")
             if len(fn_boxes) > 0:
                 vis = draw_boxes(vis, fn_boxes, (255, 0, 0), "FN")
-            out_path = out_dir / "errors_both" / f"{img_path.stem}_both.png"
-            cv2.imwrite(str(out_path), vis)
+            cv2.imwrite(str(out_dir / "errors_both" / f"{img_path.stem}_both.png"), vis)
             both_saved += 1
 
 
-# -----------------------------
-# Plotting
-# -----------------------------
 def plot_pr_curves(rows_before: List[Dict], rows_after: List[Dict], out_dir: Path) -> None:
-    """
-    PR curve per IoU threshold (match IoU). Since we sweep conf, connect points.
-    """
     ensure_dir(out_dir)
     iou_values = sorted(set([r["iou_match_thr"] for r in rows_before] + [r["iou_match_thr"] for r in rows_after]))
 
     for iou_thr in iou_values:
-        b = [r for r in rows_before if r["iou_match_thr"] == iou_thr]
-        a = [r for r in rows_after if r["iou_match_thr"] == iou_thr]
-
-        # sort by recall for nicer curve
-        b = sorted(b, key=lambda x: x["recall"])
-        a = sorted(a, key=lambda x: x["recall"])
+        before_points = sorted(
+            [row for row in rows_before if row["iou_match_thr"] == iou_thr],
+            key=lambda item: item["recall"],
+        )
+        after_points = sorted(
+            [row for row in rows_after if row["iou_match_thr"] == iou_thr],
+            key=lambda item: item["recall"],
+        )
 
         plt.figure(figsize=(7, 6))
-        plt.plot([x["recall"] for x in b], [x["precision"] for x in b], marker="o", label=f"Before (IoU={iou_thr})")
-        plt.plot([x["recall"] for x in a], [x["precision"] for x in a], marker="o", label=f"After (IoU={iou_thr})")
+        plt.plot([x["recall"] for x in before_points], [x["precision"] for x in before_points], marker="o", label=f"Before (IoU={iou_thr})")
+        plt.plot([x["recall"] for x in after_points], [x["precision"] for x in after_points], marker="o", label=f"After (IoU={iou_thr})")
         plt.xlabel("Recall")
         plt.ylabel("Precision")
         plt.title(f"PR Curve (Match IoU = {iou_thr})")
@@ -397,12 +307,18 @@ def plot_f1_vs_conf(rows_before: List[Dict], rows_after: List[Dict], out_dir: Pa
     iou_values = sorted(set([r["iou_match_thr"] for r in rows_before] + [r["iou_match_thr"] for r in rows_after]))
 
     for iou_thr in iou_values:
-        b = sorted([r for r in rows_before if r["iou_match_thr"] == iou_thr], key=lambda x: x["conf_thr"])
-        a = sorted([r for r in rows_after if r["iou_match_thr"] == iou_thr], key=lambda x: x["conf_thr"])
+        before_points = sorted(
+            [row for row in rows_before if row["iou_match_thr"] == iou_thr],
+            key=lambda item: item["conf_thr"],
+        )
+        after_points = sorted(
+            [row for row in rows_after if row["iou_match_thr"] == iou_thr],
+            key=lambda item: item["conf_thr"],
+        )
 
         plt.figure(figsize=(7, 6))
-        plt.plot([x["conf_thr"] for x in b], [x["f1"] for x in b], marker="o", label="Before")
-        plt.plot([x["conf_thr"] for x in a], [x["f1"] for x in a], marker="o", label="After")
+        plt.plot([x["conf_thr"] for x in before_points], [x["f1"] for x in before_points], marker="o", label="Before")
+        plt.plot([x["conf_thr"] for x in after_points], [x["f1"] for x in after_points], marker="o", label="After")
         plt.xlabel("Confidence threshold")
         plt.ylabel("F1")
         plt.title(f"F1 vs Conf (Match IoU = {iou_thr})")
@@ -414,17 +330,13 @@ def plot_f1_vs_conf(rows_before: List[Dict], rows_after: List[Dict], out_dir: Pa
 
 
 def plot_conf_hist_from_cache(cache: Dict[str, Dict], out_path: Path, title: str) -> None:
-    """
-    True confidence distribution (from infer_conf_min), not truncated by eval conf.
-    """
     confs = []
     for _, item in cache.items():
-        c = item["pred_conf"]
-        if c is not None and len(c) > 0:
-            confs.extend(c.tolist())
+        if item["pred_conf"] is not None and len(item["pred_conf"]) > 0:
+            confs.extend(item["pred_conf"].tolist())
 
     plt.figure(figsize=(7, 6))
-    if len(confs) > 0:
+    if confs:
         plt.hist(confs, bins=50)
         plt.axvline(np.mean(confs), linestyle="--", linewidth=2, label=f"Mean: {np.mean(confs):.3f}")
         plt.legend()
@@ -437,18 +349,52 @@ def plot_conf_hist_from_cache(cache: Dict[str, Dict], out_path: Path, title: str
     plt.close()
 
 
-# -----------------------------
-# Main
-# -----------------------------
-def main():
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Compare detector quality before and after fine-tuning.")
+    parser.add_argument("--before-model", default="icon_detect/model.pt", help="Checkpoint before fine-tuning.")
+    parser.add_argument(
+        "--after-model",
+        default="runs/detect/icon_detect_new_dataset/weights/best.pt",
+        help="Checkpoint after fine-tuning.",
+    )
+    parser.add_argument("--test-images", default="dataset_split/images/test", help="Directory containing test images.")
+    parser.add_argument("--test-labels", default="dataset_split/labels/test", help="Directory containing test labels.")
+    parser.add_argument("--output-dir", default="model_comparison_results_v2", help="Directory for comparison outputs.")
+    parser.add_argument("--infer-conf-min", type=float, default=0.001, help="Low confidence used to collect raw predictions.")
+    parser.add_argument("--nms-iou", type=float, default=0.7, help="NMS IoU used during inference.")
+    parser.add_argument("--max-det", type=int, default=500, help="Maximum detections per image.")
+    parser.add_argument("--draw-conf-threshold", type=float, default=0.5, help="Confidence threshold for error visualizations.")
+    parser.add_argument("--draw-iou-threshold", type=float, default=0.5, help="IoU threshold for error visualizations.")
+    parser.add_argument("--num-error-images", type=int, default=50, help="Maximum saved error images per category.")
+    parser.add_argument("--no-error-examples", action="store_true", help="Disable saving FP/FN example images.")
+    return parser.parse_args()
+
+
+def resolve_path(path_str: str) -> Path:
+    path = Path(path_str)
+    return path if path.is_absolute() else ROOT / path
+
+
+def main() -> None:
+    args = parse_args()
+
     cfg = EvalConfig(
-        before_model_path=Path(r"W:/hiwi/Fine-tuning icon_detect/icon_detect/model.pt"),
-        after_model_path=Path(r"W:/hiwi/Fine-tuning icon_detect/runs/detect/icon_detect_new_dataset/weights/best.pt"),
-        test_images_dir=Path(r"W:/hiwi/Fine-tuning icon_detect/dataset_split/images/test"),
-        test_labels_dir=Path(r"W:/hiwi/Fine-tuning icon_detect/dataset_split/labels/test"),
+        before_model_path=resolve_path(args.before_model),
+        after_model_path=resolve_path(args.after_model),
+        test_images_dir=resolve_path(args.test_images),
+        test_labels_dir=resolve_path(args.test_labels),
+        output_dir=resolve_path(args.output_dir),
+        conf_thresholds=[round(x, 3) for x in np.linspace(0.05, 0.95, 19).tolist()],
+        iou_match_thresholds=[0.3, 0.5],
+        infer_conf_min=args.infer_conf_min,
+        nms_iou=args.nms_iou,
+        max_det=args.max_det,
+        save_error_examples=not args.no_error_examples,
+        num_error_images=args.num_error_images,
+        draw_iou_match_threshold=args.draw_iou_threshold,
+        draw_conf_threshold=args.draw_conf_threshold,
     )
 
-    # Checks
     for path, name in [
         (cfg.before_model_path, "Before model"),
         (cfg.after_model_path, "After model"),
@@ -462,90 +408,89 @@ def main():
     with open(cfg.output_dir / "eval_config.json", "w", encoding="utf-8") as f:
         json.dump({k: (str(v) if isinstance(v, Path) else v) for k, v in asdict(cfg).items()}, f, indent=2)
 
-    # Load images
-    image_files = sorted(list(cfg.test_images_dir.glob("*.png")) + list(cfg.test_images_dir.glob("*.jpg")))
+    image_files = sorted(list(cfg.test_images_dir.glob("*.png")) + list(cfg.test_images_dir.glob("*.jpg")) + list(cfg.test_images_dir.glob("*.jpeg")))
     print(f"Found {len(image_files)} test images")
 
-    # Load models
     before_model = YOLO(str(cfg.before_model_path))
     after_model = YOLO(str(cfg.after_model_path))
 
-    # Collect predictions once per model (low conf)
-    print("\n[1/4] Collect BEFORE predictions (single pass)...")
+    print("\n[1/4] Collect BEFORE predictions...")
     cache_before = collect_predictions_once(
-        before_model, image_files, cfg.test_labels_dir,
-        infer_conf_min=cfg.infer_conf_min, nms_iou=cfg.nms_iou, max_det=cfg.max_det
+        before_model,
+        image_files,
+        cfg.test_labels_dir,
+        infer_conf_min=cfg.infer_conf_min,
+        nms_iou=cfg.nms_iou,
+        max_det=cfg.max_det,
     )
 
-    print("\n[2/4] Collect AFTER predictions (single pass)...")
+    print("\n[2/4] Collect AFTER predictions...")
     cache_after = collect_predictions_once(
-        after_model, image_files, cfg.test_labels_dir,
-        infer_conf_min=cfg.infer_conf_min, nms_iou=cfg.nms_iou, max_det=cfg.max_det
+        after_model,
+        image_files,
+        cfg.test_labels_dir,
+        infer_conf_min=cfg.infer_conf_min,
+        nms_iou=cfg.nms_iou,
+        max_det=cfg.max_det,
     )
 
-    # Sweep evaluation
-    print("\n[3/4] Sweeping conf & IoU thresholds...")
+    print("\n[3/4] Sweeping thresholds...")
     rows_before = sweep_eval(cache_before, cfg.conf_thresholds, cfg.iou_match_thresholds)
     rows_after = sweep_eval(cache_after, cfg.conf_thresholds, cfg.iou_match_thresholds)
 
-    # Save raw sweep
     with open(cfg.output_dir / "sweep_before.json", "w", encoding="utf-8") as f:
         json.dump(rows_before, f, indent=2)
     with open(cfg.output_dir / "sweep_after.json", "w", encoding="utf-8") as f:
         json.dump(rows_after, f, indent=2)
 
-    # Pick operating points (best F1 per IoU)
     best_before = pick_operating_points(rows_before)
     best_after = pick_operating_points(rows_after)
-
-    summary = {
-        "best_before": best_before,
-        "best_after": best_after,
-    }
     with open(cfg.output_dir / "best_points.json", "w", encoding="utf-8") as f:
-        json.dump(summary, f, indent=2)
+        json.dump({"best_before": best_before, "best_after": best_after}, f, indent=2)
 
-    # Print compact summary
-    print("\n=== BEST F1 OPERATING POINTS (per match IoU) ===")
+    print("\n=== BEST F1 OPERATING POINTS ===")
     for iou_thr in cfg.iou_match_thresholds:
-        kb = f"best_f1_iou_{iou_thr}"
-        bb = best_before.get(kb)
-        aa = best_after.get(kb)
-        if bb and aa:
+        key = f"best_f1_iou_{iou_thr}"
+        before = best_before.get(key)
+        after = best_after.get(key)
+        if before and after:
             print(f"\nMatch IoU = {iou_thr}")
-            print(f"  BEFORE: conf={bb['conf_thr']:.3f}  P={bb['precision']:.4f} R={bb['recall']:.4f} F1={bb['f1']:.4f}  TP={bb['tp']} FP={bb['fp']} FN={bb['fn']}")
-            print(f"  AFTER : conf={aa['conf_thr']:.3f}  P={aa['precision']:.4f} R={aa['recall']:.4f} F1={aa['f1']:.4f}  TP={aa['tp']} FP={aa['fp']} FN={aa['fn']}")
+            print(
+                f"  BEFORE: conf={before['conf_thr']:.3f} P={before['precision']:.4f} "
+                f"R={before['recall']:.4f} F1={before['f1']:.4f} TP={before['tp']} FP={before['fp']} FN={before['fn']}"
+            )
+            print(
+                f"  AFTER : conf={after['conf_thr']:.3f} P={after['precision']:.4f} "
+                f"R={after['recall']:.4f} F1={after['f1']:.4f} TP={after['tp']} FP={after['fp']} FN={after['fn']}"
+            )
 
-    # Plots
     print("\n[4/4] Saving plots...")
     plot_pr_curves(rows_before, rows_after, cfg.output_dir / "plots")
     plot_f1_vs_conf(rows_before, rows_after, cfg.output_dir / "plots")
-    plot_conf_hist_from_cache(cache_before, cfg.output_dir / "plots" / "conf_hist_before.png", "Confidence Distribution (Before, untruncated)")
-    plot_conf_hist_from_cache(cache_after, cfg.output_dir / "plots" / "conf_hist_after.png", "Confidence Distribution (After, untruncated)")
+    plot_conf_hist_from_cache(cache_before, cfg.output_dir / "plots" / "conf_hist_before.png", "Confidence Distribution (Before)")
+    plot_conf_hist_from_cache(cache_after, cfg.output_dir / "plots" / "conf_hist_after.png", "Confidence Distribution (After)")
 
-    # Error examples at chosen thresholds (use your fixed business thresholds)
     if cfg.save_error_examples:
-        err_dir_before = cfg.output_dir / "error_examples_before"
-        err_dir_after = cfg.output_dir / "error_examples_after"
-        ensure_dir(err_dir_before)
-        ensure_dir(err_dir_after)
-
-        print(f"\nSaving error examples at conf={cfg.draw_conf_threshold}, match IoU={cfg.draw_iou_match_threshold} ...")
+        print(
+            f"\nSaving error examples at conf={cfg.draw_conf_threshold}, "
+            f"match IoU={cfg.draw_iou_match_threshold} ..."
+        )
         save_error_examples(
-            cache_before, err_dir_before,
+            cache_before,
+            cfg.output_dir / "error_examples_before",
             conf_thr=cfg.draw_conf_threshold,
             iou_match_thr=cfg.draw_iou_match_threshold,
             num_images=cfg.num_error_images,
         )
         save_error_examples(
-            cache_after, err_dir_after,
+            cache_after,
+            cfg.output_dir / "error_examples_after",
             conf_thr=cfg.draw_conf_threshold,
             iou_match_thr=cfg.draw_iou_match_threshold,
             num_images=cfg.num_error_images,
         )
 
-    print("\nDone.")
-    print(f"Outputs: {cfg.output_dir.resolve()}")
+    print(f"\nDone. Outputs: {cfg.output_dir.resolve()}")
 
 
 if __name__ == "__main__":

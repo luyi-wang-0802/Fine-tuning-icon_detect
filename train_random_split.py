@@ -1,15 +1,20 @@
-from ultralytics import YOLO
-from pathlib import Path
+import argparse
 import json
-import pandas as pd
+from pathlib import Path
+
 import matplotlib.pyplot as plt
+import pandas as pd
+from ultralytics import YOLO
 
 
-def plot_training_curves(save_dir: Path):
-    """根据 results.csv 画一张综合训练曲线（可选）"""
+ROOT = Path(__file__).parent
+
+
+def plot_training_curves(save_dir: Path) -> None:
+    """Create a compact summary plot from Ultralytics results.csv."""
     results_csv = save_dir / "results.csv"
     if not results_csv.exists():
-        print(f"未找到 {results_csv}")
+        print(f"Training metrics file not found: {results_csv}")
         return
 
     df = pd.read_csv(results_csv)
@@ -18,7 +23,6 @@ def plot_training_curves(save_dir: Path):
     fig, axes = plt.subplots(2, 2, figsize=(12, 8))
     fig.suptitle("Training Curves", fontsize=14)
 
-    # box loss
     if {"train/box_loss", "val/box_loss"} <= set(df.columns):
         axes[0, 0].plot(df["epoch"], df["train/box_loss"], label="train box")
         axes[0, 0].plot(df["epoch"], df["val/box_loss"], label="val box")
@@ -26,7 +30,6 @@ def plot_training_curves(save_dir: Path):
         axes[0, 0].legend()
         axes[0, 0].grid(True)
 
-    # mAP
     if {"metrics/mAP50(B)", "metrics/mAP50-95(B)"} <= set(df.columns):
         axes[0, 1].plot(df["epoch"], df["metrics/mAP50(B)"], label="mAP@0.5")
         axes[0, 1].plot(df["epoch"], df["metrics/mAP50-95(B)"], label="mAP@0.5:0.95")
@@ -34,14 +37,12 @@ def plot_training_curves(save_dir: Path):
         axes[0, 1].legend()
         axes[0, 1].grid(True)
 
-    # lr
     if "lr/pg0" in df.columns:
         axes[1, 0].plot(df["epoch"], df["lr/pg0"], label="lr")
         axes[1, 0].set_title("Learning Rate")
         axes[1, 0].legend()
         axes[1, 0].grid(True)
 
-    # precision / recall
     if {"metrics/precision(B)", "metrics/recall(B)"} <= set(df.columns):
         axes[1, 1].plot(df["epoch"], df["metrics/precision(B)"], label="precision")
         axes[1, 1].plot(df["epoch"], df["metrics/recall(B)"], label="recall")
@@ -53,11 +54,11 @@ def plot_training_curves(save_dir: Path):
     out_path = save_dir / "training_curves.png"
     plt.savefig(out_path, dpi=300, bbox_inches="tight")
     plt.close()
-    print(f"训练曲线保存到: {out_path}")
+    print(f"Saved training curves to {out_path}")
 
 
-def eval_split(model: YOLO, data_yaml: str, split: str):
-    """在指定 split 上评估，返回一个 dict"""
+def eval_split(model: YOLO, data_yaml: str, split: str) -> dict:
+    """Evaluate one dataset split and return compact metrics."""
     metrics = model.val(data=data_yaml, split=split, verbose=False).box
     result = {
         "mAP50": float(metrics.map50),
@@ -69,19 +70,52 @@ def eval_split(model: YOLO, data_yaml: str, split: str):
     return result
 
 
-def main():
-    data_yaml = "dataset_split/icon.yaml"
-    base_model_path = "first_finetune/weights/best.pt"
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Train on a train/val/test YOLO dataset and evaluate all splits."
+    )
+    parser.add_argument(
+        "--data",
+        default="dataset_split/icon.yaml",
+        help="Path to YOLO dataset yaml.",
+    )
+    parser.add_argument(
+        "--model",
+        default="icon_detect/model.pt",
+        help="Starting model checkpoint.",
+    )
+    parser.add_argument("--epochs", type=int, default=60, help="Number of training epochs.")
+    parser.add_argument("--imgsz", type=int, default=800, help="Training image size.")
+    parser.add_argument("--batch", type=int, default=8, help="Batch size.")
+    parser.add_argument("--project", default="runs/detect", help="Output project directory.")
+    parser.add_argument("--name", default="icon_detect_new_dataset", help="Run name.")
+    parser.add_argument("--device", default=None, help="CUDA device string passed to Ultralytics.")
+    return parser.parse_args()
 
-    # 1. 加载预训练/微调起点模型
-    model = YOLO(base_model_path)
 
-    # 2. 训练
+def main() -> None:
+    args = parse_args()
+
+    data_yaml = Path(args.data)
+    model_path = Path(args.model)
+
+    if not data_yaml.is_absolute():
+        data_yaml = ROOT / data_yaml
+    if not model_path.is_absolute():
+        model_path = ROOT / model_path
+
+    if not data_yaml.exists():
+        raise FileNotFoundError(f"Dataset yaml not found: {data_yaml}")
+    if not model_path.exists():
+        raise FileNotFoundError(f"Model checkpoint not found: {model_path}")
+
+    model = YOLO(str(model_path))
+
     train_config = {
-        "data": data_yaml,
-        "epochs": 60,
-        "imgsz": 800,
-        "batch": 8,
+        "data": str(data_yaml),
+        "epochs": args.epochs,
+        "imgsz": args.imgsz,
+        "batch": args.batch,
         "lr0": 0.0015,
         "lrf": 0.01,
         "momentum": 0.937,
@@ -103,49 +137,51 @@ def main():
         "copy_paste": 0.0,
         "save": True,
         "cache": True,
-        "project": "runs/detect",
-        "name": "icon_detect_new_dataset",
+        "project": args.project,
+        "name": args.name,
         "exist_ok": True,
         "plots": True,
         "verbose": True,
     }
+    if args.device:
+        train_config["device"] = args.device
 
-    print("开始训练...")
+    print("Starting training...")
     results = model.train(**train_config)
     save_dir = Path(results.save_dir)
-    print(f"训练完成，结果目录: {save_dir}")
+    print(f"Training finished. Output directory: {save_dir}")
 
-    # 3. 绘制训练曲线（可选，自定义版；Ultralytics 已经有 results.png）
     plot_training_curves(save_dir)
 
-    # 4. 用 best.pt 重新加载模型做评估
-    best_model = YOLO(save_dir / "weights" / "best.pt")
+    best_model = YOLO(str(save_dir / "weights" / "best.pt"))
+    val_res = eval_split(best_model, str(data_yaml), "val")
+    test_res = eval_split(best_model, str(data_yaml), "test")
+    train_res = eval_split(best_model, str(data_yaml), "train")
 
-    val_res = eval_split(best_model, data_yaml, "val")
-    test_res = eval_split(best_model, data_yaml, "test")
-    train_res = eval_split(best_model, data_yaml, "train")
-
-    eval_results = {"validation": val_res, "test": test_res, "train": train_res}
+    eval_results = {
+        "validation": val_res,
+        "test": test_res,
+        "train": train_res,
+    }
 
     eval_file = save_dir / "evaluation_results.json"
-    with open(eval_file, "w") as f:
+    with open(eval_file, "w", encoding="utf-8") as f:
         json.dump(eval_results, f, indent=2)
-    print(f"评估结果保存到: {eval_file}")
+    print(f"Saved evaluation results to {eval_file}")
 
-    # 5. 简单过拟合诊断
     val_test_diff = val_res["mAP50"] - test_res["mAP50"]
     train_val_diff = train_res["mAP50"] - val_res["mAP50"]
 
-    print("\n=== 模型诊断 ===")
-    print(f"train - val mAP50 差异: {train_val_diff:.4f}")
-    print(f"val - test mAP50 差异: {val_test_diff:.4f}")
+    print("\n=== Model Diagnostics ===")
+    print(f"train - val mAP50 difference: {train_val_diff:.4f}")
+    print(f"val - test mAP50 difference: {val_test_diff:.4f}")
 
     if train_val_diff > 0.1:
-        print("提示：可能过拟合（train 明显高于 val），可考虑更强增强 / 降低 lr / 减少 epoch。")
+        print("Possible overfitting: train performance is much higher than validation.")
     elif val_test_diff > 0.05:
-        print("提示：验证集和测试集差异较大，可能存在 domain gap，需要检查测试集分布。")
+        print("Possible dataset shift: validation and test performance differ noticeably.")
     else:
-        print("train/val/test 表现接近，暂未见明显过拟合。")
+        print("Train/val/test performance is broadly consistent.")
 
 
 if __name__ == "__main__":

@@ -1,369 +1,318 @@
 """
-Split Dataset Training Script
-Functionality: Trains using separate train and val datasets
-Applicable Scenarios: When distinct training and validation sets are available to evaluate model generalization capabilities
+Train on a dataset that already has separate train and val splits.
 """
 
-from ultralytics import YOLO
-from pathlib import Path
-import matplotlib.pyplot as plt
-import pandas as pd
+import argparse
 import json
 from datetime import datetime
+from pathlib import Path
 
-root = Path(__file__).parent
+import matplotlib.pyplot as plt
+import pandas as pd
+from ultralytics import YOLO
 
 
-def check_dataset(dataset_path):
-    """Check dataset structure"""
-    dataset_path = Path(dataset_path)
+ROOT = Path(__file__).parent
+
+
+def check_dataset(dataset_path: Path):
+    """Validate the dataset structure and report image counts."""
     data_yaml = dataset_path / "data.yaml"
-    
     if not data_yaml.exists():
-        print(f"❌ Error: Configuration file does not exist: {data_yaml}")
+        print(f"Error: configuration file does not exist: {data_yaml}")
         return None
-    
-    # Load configuration
-    import yaml
-    with open(data_yaml, 'r', encoding='utf-8') as f:
-        config = yaml.safe_load(f)
-    
-    print(f"✅ Loaded configuration: {data_yaml}")
-    print(f"\n📄 Configuration Content:")
-    print(f"{'-'*60}")
-    with open(data_yaml, 'r', encoding='utf-8') as f:
-        print(f.read())
-    print(f"{'-'*60}\n")
-    
-    # Dataset statistics
+
+    print(f"Loaded configuration: {data_yaml}")
+    print("\nConfiguration contents:")
+    print("-" * 60)
+    print(data_yaml.read_text(encoding="utf-8"))
+    print("-" * 60)
+
     train_dir = dataset_path / "images" / "train"
     val_dir = dataset_path / "images" / "val"
-    
-    train_count = len(list(train_dir.glob("*.png"))) if train_dir.exists() else 0
-    val_count = len(list(val_dir.glob("*.png"))) if val_dir.exists() else 0
-    
-    print(f"📊 Dataset Statistics:")
-    print(f"   Training Set: {train_count} images")
-    print(f"   Validation Set: {val_count} images")
-    print(f"   Total:   {train_count + val_count} images\n")
-    
+
+    image_patterns = ("*.png", "*.jpg", "*.jpeg", "*.bmp")
+    train_count = sum(len(list(train_dir.glob(pattern))) for pattern in image_patterns) if train_dir.exists() else 0
+    val_count = sum(len(list(val_dir.glob(pattern))) for pattern in image_patterns) if val_dir.exists() else 0
+
+    print("Dataset statistics:")
+    print(f"  Train: {train_count} images")
+    print(f"  Val:   {val_count} images")
+    print(f"  Total: {train_count + val_count} images\n")
+
     return data_yaml, train_count, val_count
 
 
-def plot_training_results(results_dir):
-    """Plot training results"""
-    results_dir = Path(results_dir)
+def plot_training_results(results_dir: Path) -> None:
+    """Generate a summary plot from Ultralytics results.csv."""
     results_csv = results_dir / "results.csv"
-    
     if not results_csv.exists():
-        print(f"⚠️  Training results file not found: {results_csv}")
+        print(f"Training results file not found: {results_csv}")
         return
-    
+
     try:
         df = pd.read_csv(results_csv)
         df.columns = df.columns.str.strip()
-        
-        # Create 2x2 subplots
+
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-        fig.suptitle('Training Process Monitoring - Split Dataset Training', fontsize=16, fontweight='bold')
-        
-        # 1. Box Loss (Training vs Validation)
-        if 'train/box_loss' in df.columns and 'val/box_loss' in df.columns:
-            axes[0,0].plot(df['epoch'], df['train/box_loss'], 
-                          label='Training Set', color='blue', linewidth=2)
-            axes[0,0].plot(df['epoch'], df['val/box_loss'], 
-                          label='Validation Set', color='red', linewidth=2)
-            axes[0,0].set_title('Box Loss', fontweight='bold')
-            axes[0,0].set_xlabel('Epoch')
-            axes[0,0].set_ylabel('Loss')
-            axes[0,0].legend()
-            axes[0,0].grid(True, alpha=0.3)
-        
-        # 2. mAP Curves
-        if 'metrics/mAP50(B)' in df.columns:
-            axes[0,1].plot(df['epoch'], df['metrics/mAP50(B)'], 
-                          label='mAP@0.5', color='green', linewidth=2)
-            axes[0,1].plot(df['epoch'], df['metrics/mAP50-95(B)'], 
-                          label='mAP@0.5:0.95', color='orange', linewidth=2)
-            axes[0,1].set_title('mAP Performance (Validation Set)', fontweight='bold')
-            axes[0,1].set_xlabel('Epoch')
-            axes[0,1].set_ylabel('mAP')
-            axes[0,1].legend()
-            axes[0,1].grid(True, alpha=0.3)
-        
-        # 3. Learning Rate
-        if 'lr/pg0' in df.columns:
-            axes[1,0].plot(df['epoch'], df['lr/pg0'], 
-                          label='Learning Rate', color='purple', linewidth=2)
-            axes[1,0].set_title('Learning Rate Changes', fontweight='bold')
-            axes[1,0].set_xlabel('Epoch')
-            axes[1,0].set_ylabel('Learning Rate')
-            axes[1,0].legend()
-            axes[1,0].grid(True, alpha=0.3)
-        
-        # 4. Precision and Recall
-        if 'metrics/precision(B)' in df.columns:
-            axes[1,1].plot(df['epoch'], df['metrics/precision(B)'], 
-                          label='Precision', color='red', linewidth=2)
-            axes[1,1].plot(df['epoch'], df['metrics/recall(B)'], 
-                          label='Recall', color='blue', linewidth=2)
-            axes[1,1].set_title('Precision and Recall (Validation Set)', fontweight='bold')
-            axes[1,1].set_xlabel('Epoch')
-            axes[1,1].set_ylabel('Score')
-            axes[1,1].legend()
-            axes[1,1].grid(True, alpha=0.3)
-        
+        fig.suptitle("Training Process Monitoring - Split Dataset Training", fontsize=16, fontweight="bold")
+
+        if {"train/box_loss", "val/box_loss"} <= set(df.columns):
+            axes[0, 0].plot(df["epoch"], df["train/box_loss"], label="Train", color="blue", linewidth=2)
+            axes[0, 0].plot(df["epoch"], df["val/box_loss"], label="Val", color="red", linewidth=2)
+            axes[0, 0].set_title("Box Loss", fontweight="bold")
+            axes[0, 0].set_xlabel("Epoch")
+            axes[0, 0].set_ylabel("Loss")
+            axes[0, 0].legend()
+            axes[0, 0].grid(True, alpha=0.3)
+
+        if {"metrics/mAP50(B)", "metrics/mAP50-95(B)"} <= set(df.columns):
+            axes[0, 1].plot(df["epoch"], df["metrics/mAP50(B)"], label="mAP@0.5", color="green", linewidth=2)
+            axes[0, 1].plot(
+                df["epoch"],
+                df["metrics/mAP50-95(B)"],
+                label="mAP@0.5:0.95",
+                color="orange",
+                linewidth=2,
+            )
+            axes[0, 1].set_title("Validation mAP", fontweight="bold")
+            axes[0, 1].set_xlabel("Epoch")
+            axes[0, 1].set_ylabel("mAP")
+            axes[0, 1].legend()
+            axes[0, 1].grid(True, alpha=0.3)
+
+        if "lr/pg0" in df.columns:
+            axes[1, 0].plot(df["epoch"], df["lr/pg0"], label="Learning Rate", color="purple", linewidth=2)
+            axes[1, 0].set_title("Learning Rate", fontweight="bold")
+            axes[1, 0].set_xlabel("Epoch")
+            axes[1, 0].set_ylabel("LR")
+            axes[1, 0].legend()
+            axes[1, 0].grid(True, alpha=0.3)
+
+        if {"metrics/precision(B)", "metrics/recall(B)"} <= set(df.columns):
+            axes[1, 1].plot(df["epoch"], df["metrics/precision(B)"], label="Precision", color="red", linewidth=2)
+            axes[1, 1].plot(df["epoch"], df["metrics/recall(B)"], label="Recall", color="blue", linewidth=2)
+            axes[1, 1].set_title("Precision / Recall", fontweight="bold")
+            axes[1, 1].set_xlabel("Epoch")
+            axes[1, 1].set_ylabel("Score")
+            axes[1, 1].legend()
+            axes[1, 1].grid(True, alpha=0.3)
+
         plt.tight_layout()
-        
-        # Save plot
         plot_path = results_dir / "training_curves.png"
-        plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-        print(f"📊 Training curves saved: {plot_path}")
-        
+        plt.savefig(plot_path, dpi=300, bbox_inches="tight")
         plt.close()
-        
-        # Print best performance
-        if 'metrics/mAP50(B)' in df.columns:
-            best_epoch_idx = df['metrics/mAP50(B)'].idxmax()
-            best_epoch = df.loc[best_epoch_idx]
-            
-            print(f"\n{'='*60}")
-            print(f"Best Performance (Epoch {int(best_epoch['epoch'])})")
-            print(f"{'='*60}")
-            print(f"  mAP@0.5:      {best_epoch['metrics/mAP50(B)']:.4f}")
-            print(f"  mAP@0.5:0.95: {best_epoch['metrics/mAP50-95(B)']:.4f}")
-            print(f"  Precision:    {best_epoch['metrics/precision(B)']:.4f}")
-            print(f"  Recall:       {best_epoch['metrics/recall(B)']:.4f}")
-            print(f"{'='*60}")
-        
-    except Exception as e:
-        print(f"❌ Error plotting training curves: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"Saved training curves to {plot_path}")
+    except Exception as exc:
+        print(f"Error while plotting training curves: {exc}")
+        raise
 
 
-def evaluate_model(model, data_yaml):
-    """Detailed evaluation of model performance"""
-    print(f"\n{'='*60}")
+def evaluate_model(model: YOLO, data_yaml: str):
+    """Evaluate train and val performance."""
+    print("\n" + "=" * 60)
     print("Model Evaluation")
-    print(f"{'='*60}")
-    
-    # Validation set evaluation
-    print("\n📊 Validation Set Evaluation:")
+    print("=" * 60)
+
+    print("\nValidation split:")
     try:
-        val_metrics = model.val(data=data_yaml, split='val')
+        val_metrics = model.val(data=data_yaml, split="val")
         print(f"  mAP@0.5:      {val_metrics.box.map50:.4f}")
         print(f"  mAP@0.5:0.95: {val_metrics.box.map:.4f}")
         print(f"  Precision:    {val_metrics.box.p[0]:.4f}")
         print(f"  Recall:       {val_metrics.box.r[0]:.4f}")
         print(f"  F1 Score:     {val_metrics.box.f1[0]:.4f}")
-    except Exception as e:
-        print(f"❌ Validation set evaluation failed: {e}")
+    except Exception as exc:
+        print(f"Validation evaluation failed: {exc}")
         val_metrics = None
-    
-    # Training set evaluation
-    print("\n📊 Training Set Evaluation:")
+
+    print("\nTraining split:")
     try:
-        train_metrics = model.val(data=data_yaml, split='train')
+        train_metrics = model.val(data=data_yaml, split="train")
         print(f"  mAP@0.5:      {train_metrics.box.map50:.4f}")
         print(f"  mAP@0.5:0.95: {train_metrics.box.map:.4f}")
         print(f"  Precision:    {train_metrics.box.p[0]:.4f}")
         print(f"  Recall:       {train_metrics.box.r[0]:.4f}")
         print(f"  F1 Score:     {train_metrics.box.f1[0]:.4f}")
-    except Exception as e:
-        print(f"❌ Training set evaluation failed: {e}")
+    except Exception as exc:
+        print(f"Training evaluation failed: {exc}")
         train_metrics = None
-    
-    # Overfitting diagnosis
+
     if val_metrics and train_metrics:
-        print(f"\n{'='*60}")
-        print("Overfitting Diagnosis")
-        print(f"{'='*60}")
-        
         train_val_diff = train_metrics.box.map50 - val_metrics.box.map50
-        print(f"  Training mAP@0.5: {train_metrics.box.map50:.4f}")
-        print(f"  Validation mAP@0.5: {val_metrics.box.map50:.4f}")
-        print(f"  Difference:       {train_val_diff:.4f}")
-        
+        print("\n" + "=" * 60)
+        print("Overfitting Diagnosis")
+        print("=" * 60)
+        print(f"  Train mAP@0.5: {train_metrics.box.map50:.4f}")
+        print(f"  Val mAP@0.5:   {val_metrics.box.map50:.4f}")
+        print(f"  Difference:    {train_val_diff:.4f}")
+
         if train_val_diff > 0.1:
-            print(f"\n⚠️  Possible overfitting detected!")
-            print(f"  Recommendations:")
-            print(f"    - Increase data augmentation")
-            print(f"    - Reduce learning rate")
-            print(f"    - Use dropout")
-            print(f"    - Decrease patience")
+            print("\nPossible overfitting detected.")
         elif train_val_diff > 0.05:
-            print(f"\n✅ Slight overfitting, within acceptable range")
+            print("\nSlight overfitting, still within a tolerable range.")
         else:
-            print(f"\n✅ Model performance is good, no obvious overfitting")
-        
-        print(f"{'='*60}")
-    
+            print("\nNo obvious overfitting.")
+        print("=" * 60)
+
     return val_metrics, train_metrics
 
 
-def main():
-    dataset_name = "new_dataset"    # Dataset path
-    dataset_path = root / dataset_name
-    
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Train on a dataset with separate train/val splits."
+    )
+    parser.add_argument(
+        "--dataset",
+        default="new_dataset",
+        help="Dataset directory containing data.yaml and images/train, images/val.",
+    )
+    parser.add_argument(
+        "--model",
+        default="icon_detect/model.pt",
+        help="Starting model checkpoint.",
+    )
+    parser.add_argument("--epochs", type=int, default=100, help="Number of training epochs.")
+    parser.add_argument("--imgsz", type=int, default=640, help="Training image size.")
+    parser.add_argument("--batch", type=int, default=8, help="Batch size.")
+    parser.add_argument("--project", default="runs/split_train", help="Output project directory.")
+    parser.add_argument("--name", default="icon_detect_split_dataset", help="Run name.")
+    parser.add_argument("--device", default=None, help="CUDA device string passed to Ultralytics.")
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+
+    dataset_path = Path(args.dataset)
+    model_path = Path(args.model)
+
+    if not dataset_path.is_absolute():
+        dataset_path = ROOT / dataset_path
+    if not model_path.is_absolute():
+        model_path = ROOT / model_path
+
     if not dataset_path.exists():
-        print(f"❌ Error: Dataset directory does not exist: {dataset_path}")
-        print(f"\nPlease ensure the dataset is located at: {dataset_path}")
-        return
-    
-    print(f"\n{'='*60}")
+        raise FileNotFoundError(f"Dataset directory does not exist: {dataset_path}")
+    if not model_path.exists():
+        raise FileNotFoundError(f"Model checkpoint does not exist: {model_path}")
+
+    print("\n" + "=" * 60)
     print("Split Dataset Training")
-    print(f"{'='*60}")
+    print("=" * 60)
     print(f"Dataset path: {dataset_path}")
-    print(f"Training strategy: Using separate train and val datasets")
-    print(f"{'='*60}\n")
-    
-    # Check dataset
+    print("Training strategy: existing train/val split")
+    print("=" * 60 + "\n")
+
     result = check_dataset(dataset_path)
-    
     if result is None:
         return
-    
+
     data_yaml, train_count, val_count = result
-    
-    # Load pre-trained model
-    print("Loading pre-trained model: icon_detect/model.pt")
-    model = YOLO('icon_detect/model.pt')
-    
-    # Training configuration
+
+    print(f"Loading model from {model_path}")
+    model = YOLO(str(model_path))
+
     train_config = {
-        'data': str(data_yaml),
-        'epochs': 100,          # Number of training epochs
-        'imgsz': 640,
-        'batch': 8,
-        
-        'lr0': 0.0015,         # Initial learning rate
-        'lrf': 0.01,           # Final learning rate
-        'momentum': 0.937,
-        'weight_decay': 0.0005,
-        'warmup_epochs': 3,
-        'patience': 15,        # Early stopping patience
-        
-        # Data augmentation - moderate settings
-        'hsv_h': 0.01,         # Hue augmentation
-        'hsv_s': 0.4,          # Saturation augmentation
-        'hsv_v': 0.3,          # Value augmentation
-        'degrees': 5,          # Rotation degrees
-        'translate': 0.08,     # Translation
-        'scale': 0.3,          # Scaling
-        'shear': 0.0,          # Shearing
-        'perspective': 0.0,    # Perspective transformation
-        'flipud': 0.0,         # Vertical flip
-        'fliplr': 0.5,         # Horizontal flip
-        'mosaic': 0.3,         # Mosaic augmentation
-        'mixup': 0.0,          # Mixup augmentation
-        'copy_paste': 0.0,     # Copy-paste augmentation
-        
-        'save': True,
-        'cache': True,
-        'project': 'runs/split_train',
-        'name': 'icon_detect_split_dataset',
-        'exist_ok': True,
-        'plots': True,
-        'verbose': True,
+        "data": str(data_yaml),
+        "epochs": args.epochs,
+        "imgsz": args.imgsz,
+        "batch": args.batch,
+        "lr0": 0.0015,
+        "lrf": 0.01,
+        "momentum": 0.937,
+        "weight_decay": 0.0005,
+        "warmup_epochs": 3,
+        "patience": 15,
+        "hsv_h": 0.01,
+        "hsv_s": 0.4,
+        "hsv_v": 0.3,
+        "degrees": 5,
+        "translate": 0.08,
+        "scale": 0.3,
+        "shear": 0.0,
+        "perspective": 0.0,
+        "flipud": 0.0,
+        "fliplr": 0.5,
+        "mosaic": 0.3,
+        "mixup": 0.0,
+        "copy_paste": 0.0,
+        "save": True,
+        "cache": True,
+        "project": args.project,
+        "name": args.name,
+        "exist_ok": True,
+        "plots": True,
+        "verbose": True,
     }
-    
-    print(f"\n{'='*60}")
-    print("Training Configuration")
-    print(f"{'='*60}")
+    if args.device:
+        train_config["device"] = args.device
+
+    print("\nTraining configuration:")
+    print("=" * 60)
     for key, value in train_config.items():
         print(f"  {key}: {value}")
-    print(f"{'='*60}\n")
-    
-    # Start training
-    print(f"Starting training... (Total {train_config['epochs']} epochs)")
-    print(f"📊 Training set: {train_count} images")
-    print(f"📊 Validation set: {val_count} images")
-    print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-    
+    print("=" * 60 + "\n")
+
+    print(f"Starting training for {train_config['epochs']} epochs")
+    print(f"Train images: {train_count}")
+    print(f"Val images:   {val_count}")
+    print(f"Start time:   {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+
     results = model.train(**train_config)
-    
-    print(f"\n{'='*60}")
-    print("✅ Training completed!")
-    print(f"{'='*60}")
-    print(f"End time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    print("\n" + "=" * 60)
+    print("Training completed")
+    print("=" * 60)
+    print(f"End time:      {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Save directory: {results.save_dir}")
-    print(f"Best model: {results.save_dir / 'weights' / 'best.pt'}")
-    print(f"Last model: {results.save_dir / 'weights' / 'last.pt'}")
-    print(f"{'='*60}\n")
-    
-    # Plot training curves
-    plot_training_results(results.save_dir)
-    
-    # Load best model and evaluate
-    print("\nLoading best model for evaluation...")
-    best_model = YOLO(results.save_dir / 'weights' / 'best.pt')
-    
+    print(f"Best model:     {results.save_dir / 'weights' / 'best.pt'}")
+    print(f"Last model:     {results.save_dir / 'weights' / 'last.pt'}")
+    print("=" * 60 + "\n")
+
+    plot_training_results(Path(results.save_dir))
+
+    print("Loading best model for evaluation...")
+    best_model = YOLO(str(Path(results.save_dir) / "weights" / "best.pt"))
     val_metrics, train_metrics = evaluate_model(best_model, str(data_yaml))
-    
-    # Save evaluation results
+
     if val_metrics and train_metrics:
+        diff = train_metrics.box.map50 - val_metrics.box.map50
         eval_results = {
-            'training_mode': 'split_dataset',
-            'dataset': str(dataset_path),
-            'train_count': train_count,
-            'val_count': val_count,
-            'total_epochs': train_config['epochs'],
-            'timestamp': datetime.now().isoformat(),
-            
-            'validation_metrics': {
-                'mAP50': float(val_metrics.box.map50),
-                'mAP50_95': float(val_metrics.box.map),
-                'precision': float(val_metrics.box.p[0]),
-                'recall': float(val_metrics.box.r[0]),
-                'f1': float(val_metrics.box.f1[0])
+            "training_mode": "split_dataset",
+            "dataset": str(dataset_path),
+            "train_count": train_count,
+            "val_count": val_count,
+            "total_epochs": train_config["epochs"],
+            "timestamp": datetime.now().isoformat(),
+            "validation_metrics": {
+                "mAP50": float(val_metrics.box.map50),
+                "mAP50_95": float(val_metrics.box.map),
+                "precision": float(val_metrics.box.p[0]),
+                "recall": float(val_metrics.box.r[0]),
+                "f1": float(val_metrics.box.f1[0]),
             },
-            
-            'train_metrics': {
-                'mAP50': float(train_metrics.box.map50),
-                'mAP50_95': float(train_metrics.box.map),
-                'precision': float(train_metrics.box.p[0]),
-                'recall': float(train_metrics.box.r[0]),
-                'f1': float(train_metrics.box.f1[0])
+            "train_metrics": {
+                "mAP50": float(train_metrics.box.map50),
+                "mAP50_95": float(train_metrics.box.map),
+                "precision": float(train_metrics.box.p[0]),
+                "recall": float(train_metrics.box.r[0]),
+                "f1": float(train_metrics.box.f1[0]),
             },
-            
-            'overfitting_analysis': {
-                'train_val_diff': float(train_metrics.box.map50 - val_metrics.box.map50),
-                'status': 'good' if (train_metrics.box.map50 - val_metrics.box.map50) <= 0.05 else 
-                         'acceptable' if (train_metrics.box.map50 - val_metrics.box.map50) <= 0.1 else 
-                         'overfitting'
+            "overfitting_analysis": {
+                "train_val_diff": float(diff),
+                "status": "good" if diff <= 0.05 else "acceptable" if diff <= 0.1 else "overfitting",
             },
-            
-            'model_paths': {
-                'best': str(results.save_dir / 'weights' / 'best.pt'),
-                'last': str(results.save_dir / 'weights' / 'last.pt')
-            }
+            "model_paths": {
+                "best": str(Path(results.save_dir) / "weights" / "best.pt"),
+                "last": str(Path(results.save_dir) / "weights" / "last.pt"),
+            },
         }
-        
-        eval_file = results.save_dir / "evaluation_results.json"
-        with open(eval_file, 'w', encoding='utf-8') as f:
+
+        eval_file = Path(results.save_dir) / "evaluation_results.json"
+        with open(eval_file, "w", encoding="utf-8") as f:
             json.dump(eval_results, f, indent=2, ensure_ascii=False)
-        
-        print(f"\n💾 Evaluation results saved: {eval_file}")
-    
-    # Training summary
-    print(f"\n{'='*60}")
-    print("📝 Training Summary")
-    print(f"{'='*60}")
-    print(f"✅ Dataset mode: Split training (independent train/val)")
-    print(f"✅ Training set: {train_count} images")
-    print(f"✅ Validation set: {val_count} images")
-    print(f"✅ Ratio: {train_count/(train_count+val_count)*100:.1f}% / {val_count/(train_count+val_count)*100:.1f}%")
-    print(f"\n💡 Advantages:")
-    print(f"  - Independent validation set provides a true assessment of generalization")
-    print(f"  - Early stopping based on validation performance")
-    print(f"  - Can monitor overfitting")
-    print(f"\n⚠️  Note:")
-    print(f"  - No independent test set; final performance is based on the validation set")
-    print(f"  - Cross-validation is recommended for further verification")
-    print(f"{'='*60}\n")
-    
-    print("🎉 Training process completed!")
+        print(f"\nSaved evaluation results to {eval_file}")
 
 
 if __name__ == "__main__":
