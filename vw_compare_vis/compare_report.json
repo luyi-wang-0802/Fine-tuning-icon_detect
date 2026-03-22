@@ -1,0 +1,1917 @@
+{
+  "settings": {
+    "conf": 0.5,
+    "nms_iou": 0.7,
+    "max_det": 500,
+    "match_iou_for_stats": 0.5,
+    "topk": 80
+  },
+  "summary": {
+    "num_images": 50,
+    "note": "Triplets are GT | Before | After. 'score' favors FN reduction (x2) and FP reduction (x1)."
+  },
+  "top_improvements": [
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Door tool for door1_floor1.png",
+      "stem": "Activate Door tool for door1_floor1",
+      "gt": 210,
+      "before": {
+        "pred": 236,
+        "tp": 109,
+        "fp": 127,
+        "fn": 101
+      },
+      "after": {
+        "pred": 449,
+        "tp": 196,
+        "fp": 253,
+        "fn": 14
+      },
+      "score": 48.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Door tool for door1_floor1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2919_1.png",
+      "stem": "popup_window_2919_1",
+      "gt": 27,
+      "before": {
+        "pred": 31,
+        "tp": 15,
+        "fp": 16,
+        "fn": 12
+      },
+      "after": {
+        "pred": 27,
+        "tp": 27,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 40.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2919_1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Window tool for window1_floor1.png",
+      "stem": "Activate Window tool for window1_floor1",
+      "gt": 211,
+      "before": {
+        "pred": 243,
+        "tp": 118,
+        "fp": 125,
+        "fn": 93
+      },
+      "after": {
+        "pred": 450,
+        "tp": 198,
+        "fp": 252,
+        "fn": 13
+      },
+      "score": 33.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Window tool for window1_floor1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2991.png",
+      "stem": "popup_window_2991",
+      "gt": 25,
+      "before": {
+        "pred": 22,
+        "tp": 13,
+        "fp": 9,
+        "fn": 12
+      },
+      "after": {
+        "pred": 25,
+        "tp": 25,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 33.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2991.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_task_7f6b9d0b_0_times.png",
+      "stem": "masked_task_7f6b9d0b_0_times",
+      "gt": 27,
+      "before": {
+        "pred": 20,
+        "tp": 14,
+        "fp": 6,
+        "fn": 13
+      },
+      "after": {
+        "pred": 27,
+        "tp": 27,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 32.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_task_7f6b9d0b_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_task_53d4ed93_0_times.png",
+      "stem": "masked_task_53d4ed93_0_times",
+      "gt": 26,
+      "before": {
+        "pred": 20,
+        "tp": 14,
+        "fp": 6,
+        "fn": 12
+      },
+      "after": {
+        "pred": 26,
+        "tp": 26,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 30.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_task_53d4ed93_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_4539.png",
+      "stem": "popup_window_4539",
+      "gt": 26,
+      "before": {
+        "pred": 22,
+        "tp": 14,
+        "fp": 8,
+        "fn": 12
+      },
+      "after": {
+        "pred": 25,
+        "tp": 25,
+        "fp": 0,
+        "fn": 1
+      },
+      "score": 30.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_4539.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_1664.png",
+      "stem": "popup_window_1664",
+      "gt": 21,
+      "before": {
+        "pred": 20,
+        "tp": 11,
+        "fp": 9,
+        "fn": 10
+      },
+      "after": {
+        "pred": 21,
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 29.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_1664.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2526.png",
+      "stem": "popup_window_2526",
+      "gt": 24,
+      "before": {
+        "pred": 23,
+        "tp": 14,
+        "fp": 9,
+        "fn": 10
+      },
+      "after": {
+        "pred": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 29.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2526.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_6510.png",
+      "stem": "popup_window_6510",
+      "gt": 22,
+      "before": {
+        "pred": 24,
+        "tp": 13,
+        "fp": 11,
+        "fn": 9
+      },
+      "after": {
+        "pred": 22,
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 29.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_6510.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_3035.png",
+      "stem": "popup_window_3035",
+      "gt": 24,
+      "before": {
+        "pred": 22,
+        "tp": 14,
+        "fp": 8,
+        "fn": 10
+      },
+      "after": {
+        "pred": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 28.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_3035.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_Switch to Design Layers Tab_0_times.png",
+      "stem": "masked_Switch to Design Layers Tab_0_times",
+      "gt": 25,
+      "before": {
+        "pred": 18,
+        "tp": 13,
+        "fp": 5,
+        "fn": 12
+      },
+      "after": {
+        "pred": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 1
+      },
+      "score": 27.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_Switch to Design Layers Tab_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2502_1.png",
+      "stem": "popup_window_2502_1",
+      "gt": 21,
+      "before": {
+        "pred": 18,
+        "tp": 11,
+        "fp": 7,
+        "fn": 10
+      },
+      "after": {
+        "pred": 21,
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 27.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2502_1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_task_e9cc4d9f_0_times.png",
+      "stem": "masked_task_e9cc4d9f_0_times",
+      "gt": 25,
+      "before": {
+        "pred": 20,
+        "tp": 14,
+        "fp": 6,
+        "fn": 11
+      },
+      "after": {
+        "pred": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 1
+      },
+      "score": 26.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_task_e9cc4d9f_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_Confirm Creation of New Design Layer_0_times.png",
+      "stem": "masked_Confirm Creation of New Design Layer_0_times",
+      "gt": 13,
+      "before": {
+        "pred": 38,
+        "tp": 6,
+        "fp": 32,
+        "fn": 7
+      },
+      "after": {
+        "pred": 34,
+        "tp": 13,
+        "fp": 21,
+        "fn": 0
+      },
+      "score": 25.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_Confirm Creation of New Design Layer_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window.png",
+      "stem": "popup_window",
+      "gt": 21,
+      "before": {
+        "pred": 19,
+        "tp": 10,
+        "fp": 9,
+        "fn": 11
+      },
+      "after": {
+        "pred": 33,
+        "tp": 21,
+        "fp": 12,
+        "fn": 0
+      },
+      "score": 19.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_Click New\u2026_0_times.png",
+      "stem": "masked_Click New\u2026_0_times",
+      "gt": 25,
+      "before": {
+        "pred": 12,
+        "tp": 12,
+        "fp": 0,
+        "fn": 13
+      },
+      "after": {
+        "pred": 44,
+        "tp": 24,
+        "fp": 20,
+        "fn": 1
+      },
+      "score": 4.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_Click New\u2026_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Window tool for window3_floor1_1_times_3162.png",
+      "stem": "Activate Window tool for window3_floor1_1_times_3162",
+      "gt": 228,
+      "before": {
+        "pred": 227,
+        "tp": 117,
+        "fp": 110,
+        "fn": 111
+      },
+      "after": {
+        "pred": 500,
+        "tp": 206,
+        "fp": 294,
+        "fn": 22
+      },
+      "score": -6.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Window tool for window3_floor1_1_times_3162.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_task_e3532950_0_times_1.png",
+      "stem": "masked_task_e3532950_0_times_1",
+      "gt": 22,
+      "before": {
+        "pred": 58,
+        "tp": 13,
+        "fp": 45,
+        "fn": 9
+      },
+      "after": {
+        "pred": 95,
+        "tp": 22,
+        "fp": 73,
+        "fn": 0
+      },
+      "score": -10.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_task_e3532950_0_times_1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_task_5dd8f2b2_1_times.png",
+      "stem": "masked_task_5dd8f2b2_1_times",
+      "gt": 14,
+      "before": {
+        "pred": 12,
+        "tp": 8,
+        "fp": 4,
+        "fn": 6
+      },
+      "after": {
+        "pred": 40,
+        "tp": 13,
+        "fp": 27,
+        "fn": 1
+      },
+      "score": -13.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_task_5dd8f2b2_1_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2202.png",
+      "stem": "popup_window_2202",
+      "gt": 22,
+      "before": {
+        "pred": 57,
+        "tp": 14,
+        "fp": 43,
+        "fn": 8
+      },
+      "after": {
+        "pred": 95,
+        "tp": 22,
+        "fp": 73,
+        "fn": 0
+      },
+      "score": -14.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2202.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_1252.png",
+      "stem": "popup_window_1252",
+      "gt": 13,
+      "before": {
+        "pred": 10,
+        "tp": 8,
+        "fp": 2,
+        "fn": 5
+      },
+      "after": {
+        "pred": 40,
+        "tp": 13,
+        "fp": 27,
+        "fn": 0
+      },
+      "score": -15.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_1252.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_1753_1.png",
+      "stem": "popup_window_1753_1",
+      "gt": 14,
+      "before": {
+        "pred": 12,
+        "tp": 6,
+        "fp": 6,
+        "fn": 8
+      },
+      "after": {
+        "pred": 49,
+        "tp": 13,
+        "fp": 36,
+        "fn": 1
+      },
+      "score": -16.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_1753_1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_1358.png",
+      "stem": "popup_window_1358",
+      "gt": 13,
+      "before": {
+        "pred": 7,
+        "tp": 6,
+        "fp": 1,
+        "fn": 7
+      },
+      "after": {
+        "pred": 49,
+        "tp": 13,
+        "fp": 36,
+        "fn": 0
+      },
+      "score": -21.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_1358.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2453.png",
+      "stem": "popup_window_2453",
+      "gt": 13,
+      "before": {
+        "pred": 7,
+        "tp": 6,
+        "fp": 1,
+        "fn": 7
+      },
+      "after": {
+        "pred": 49,
+        "tp": 13,
+        "fp": 36,
+        "fn": 0
+      },
+      "score": -21.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2453.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_7617.png",
+      "stem": "popup_window_7617",
+      "gt": 13,
+      "before": {
+        "pred": 13,
+        "tp": 7,
+        "fp": 6,
+        "fn": 6
+      },
+      "after": {
+        "pred": 55,
+        "tp": 13,
+        "fp": 42,
+        "fn": 0
+      },
+      "score": -24.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_7617.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_1463.png",
+      "stem": "popup_window_1463",
+      "gt": 13,
+      "before": {
+        "pred": 6,
+        "tp": 5,
+        "fp": 1,
+        "fn": 8
+      },
+      "after": {
+        "pred": 55,
+        "tp": 13,
+        "fp": 42,
+        "fn": 0
+      },
+      "score": -25.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_1463.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Door tool_1_times_2046.png",
+      "stem": "Activate Door tool_1_times_2046",
+      "gt": 223,
+      "before": {
+        "pred": 224,
+        "tp": 147,
+        "fp": 77,
+        "fn": 76
+      },
+      "after": {
+        "pred": 500,
+        "tp": 195,
+        "fp": 305,
+        "fn": 28
+      },
+      "score": -132.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Door tool_1_times_2046.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Type Layer Name_2_times_2834.png",
+      "stem": "Type Layer Name_2_times_2834",
+      "gt": 229,
+      "before": {
+        "pred": 267,
+        "tp": 160,
+        "fp": 107,
+        "fn": 69
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 37
+      },
+      "score": -137.0,
+      "triplet": "vw_compare_vis\\triplets\\Type Layer Name_2_times_2834.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Edit Layer Properties_1_times_3035.png",
+      "stem": "Edit Layer Properties_1_times_3035",
+      "gt": 228,
+      "before": {
+        "pred": 294,
+        "tp": 172,
+        "fp": 122,
+        "fn": 56
+      },
+      "after": {
+        "pred": 500,
+        "tp": 193,
+        "fp": 307,
+        "fn": 35
+      },
+      "score": -143.0,
+      "triplet": "vw_compare_vis\\triplets\\Edit Layer Properties_1_times_3035.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Click New Layer button_1_times_1777.png",
+      "stem": "Click New Layer button_1_times_1777",
+      "gt": 222,
+      "before": {
+        "pred": 230,
+        "tp": 154,
+        "fp": 76,
+        "fn": 68
+      },
+      "after": {
+        "pred": 500,
+        "tp": 195,
+        "fp": 305,
+        "fn": 27
+      },
+      "score": -147.0,
+      "triplet": "vw_compare_vis\\triplets\\Click New Layer button_1_times_1777.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Create New Layer Dialog_1_times_7895.png",
+      "stem": "Create New Layer Dialog_1_times_7895",
+      "gt": 233,
+      "before": {
+        "pred": 252,
+        "tp": 163,
+        "fp": 89,
+        "fn": 70
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 41
+      },
+      "score": -161.0,
+      "triplet": "vw_compare_vis\\triplets\\Create New Layer Dialog_1_times_7895.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Place Window5_floor1.png",
+      "stem": "Place Window5_floor1",
+      "gt": 241,
+      "before": {
+        "pred": 247,
+        "tp": 168,
+        "fp": 79,
+        "fn": 73
+      },
+      "after": {
+        "pred": 500,
+        "tp": 194,
+        "fp": 306,
+        "fn": 47
+      },
+      "score": -175.0,
+      "triplet": "vw_compare_vis\\triplets\\Place Window5_floor1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Slab tool.png",
+      "stem": "Activate Slab tool",
+      "gt": 236,
+      "before": {
+        "pred": 242,
+        "tp": 167,
+        "fp": 75,
+        "fn": 69
+      },
+      "after": {
+        "pred": 500,
+        "tp": 194,
+        "fp": 306,
+        "fn": 42
+      },
+      "score": -177.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Slab tool.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Create Slab for Floor 1_1_times_1951.png",
+      "stem": "Create Slab for Floor 1_1_times_1951",
+      "gt": 221,
+      "before": {
+        "pred": 222,
+        "tp": 157,
+        "fp": 65,
+        "fn": 64
+      },
+      "after": {
+        "pred": 500,
+        "tp": 190,
+        "fp": 310,
+        "fn": 31
+      },
+      "score": -179.0,
+      "triplet": "vw_compare_vis\\triplets\\Create Slab for Floor 1_1_times_1951.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Place Window3_floor1_1_times_1267.png",
+      "stem": "Place Window3_floor1_1_times_1267",
+      "gt": 240,
+      "before": {
+        "pred": 242,
+        "tp": 166,
+        "fp": 76,
+        "fn": 74
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 48
+      },
+      "score": -180.0,
+      "triplet": "vw_compare_vis\\triplets\\Place Window3_floor1_1_times_1267.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Window tool_1_times_1039.png",
+      "stem": "Activate Window tool_1_times_1039",
+      "gt": 235,
+      "before": {
+        "pred": 237,
+        "tp": 167,
+        "fp": 70,
+        "fn": 68
+      },
+      "after": {
+        "pred": 500,
+        "tp": 191,
+        "fp": 309,
+        "fn": 44
+      },
+      "score": -191.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Window tool_1_times_1039.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Place Window3_floor2.png",
+      "stem": "Place Window3_floor2",
+      "gt": 242,
+      "before": {
+        "pred": 224,
+        "tp": 167,
+        "fp": 57,
+        "fn": 75
+      },
+      "after": {
+        "pred": 500,
+        "tp": 193,
+        "fp": 307,
+        "fn": 49
+      },
+      "score": -198.0,
+      "triplet": "vw_compare_vis\\triplets\\Place Window3_floor2.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Open Organization Dialog_1_times_2050.png",
+      "stem": "Open Organization Dialog_1_times_2050",
+      "gt": 242,
+      "before": {
+        "pred": 242,
+        "tp": 173,
+        "fp": 69,
+        "fn": 69
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 50
+      },
+      "score": -201.0,
+      "triplet": "vw_compare_vis\\triplets\\Open Organization Dialog_1_times_2050.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Draw Wall7_floor2_1_times_1802.png",
+      "stem": "Draw Wall7_floor2_1_times_1802",
+      "gt": 240,
+      "before": {
+        "pred": 237,
+        "tp": 175,
+        "fp": 62,
+        "fn": 65
+      },
+      "after": {
+        "pred": 500,
+        "tp": 194,
+        "fp": 306,
+        "fn": 46
+      },
+      "score": -206.0,
+      "triplet": "vw_compare_vis\\triplets\\Draw Wall7_floor2_1_times_1802.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\task_9a73eec4_1_times.png",
+      "stem": "task_9a73eec4_1_times",
+      "gt": 224,
+      "before": {
+        "pred": 199,
+        "tp": 157,
+        "fp": 42,
+        "fn": 67
+      },
+      "after": {
+        "pred": 500,
+        "tp": 188,
+        "fp": 312,
+        "fn": 36
+      },
+      "score": -208.0,
+      "triplet": "vw_compare_vis\\triplets\\task_9a73eec4_1_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Stair tool_1_times_2133.png",
+      "stem": "Activate Stair tool_1_times_2133",
+      "gt": 244,
+      "before": {
+        "pred": 224,
+        "tp": 172,
+        "fp": 52,
+        "fn": 72
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 52
+      },
+      "score": -216.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Stair tool_1_times_2133.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\initial_layer_2175.png",
+      "stem": "initial_layer_2175",
+      "gt": 226,
+      "before": {
+        "pred": 194,
+        "tp": 159,
+        "fp": 35,
+        "fn": 67
+      },
+      "after": {
+        "pred": 500,
+        "tp": 189,
+        "fp": 311,
+        "fn": 37
+      },
+      "score": -216.0,
+      "triplet": "vw_compare_vis\\triplets\\initial_layer_2175.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Place Door1_floor2.png",
+      "stem": "Place Door1_floor2",
+      "gt": 238,
+      "before": {
+        "pred": 212,
+        "tp": 166,
+        "fp": 46,
+        "fn": 72
+      },
+      "after": {
+        "pred": 500,
+        "tp": 190,
+        "fp": 310,
+        "fn": 48
+      },
+      "score": -216.0,
+      "triplet": "vw_compare_vis\\triplets\\Place Door1_floor2.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Set Roof Bearing Inset_1_times_1436.png",
+      "stem": "Set Roof Bearing Inset_1_times_1436",
+      "gt": 240,
+      "before": {
+        "pred": 223,
+        "tp": 170,
+        "fp": 53,
+        "fn": 70
+      },
+      "after": {
+        "pred": 500,
+        "tp": 190,
+        "fp": 310,
+        "fn": 50
+      },
+      "score": -217.0,
+      "triplet": "vw_compare_vis\\triplets\\Set Roof Bearing Inset_1_times_1436.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Draw Wall18_floor1.png",
+      "stem": "Draw Wall18_floor1",
+      "gt": 240,
+      "before": {
+        "pred": 222,
+        "tp": 173,
+        "fp": 49,
+        "fn": 67
+      },
+      "after": {
+        "pred": 500,
+        "tp": 193,
+        "fp": 307,
+        "fn": 47
+      },
+      "score": -218.0,
+      "triplet": "vw_compare_vis\\triplets\\Draw Wall18_floor1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Switch to Design Layers tab_0_times_2916.png",
+      "stem": "Switch to Design Layers tab_0_times_2916",
+      "gt": 234,
+      "before": {
+        "pred": 226,
+        "tp": 173,
+        "fp": 53,
+        "fn": 61
+      },
+      "after": {
+        "pred": 500,
+        "tp": 190,
+        "fp": 310,
+        "fn": 44
+      },
+      "score": -223.0,
+      "triplet": "vw_compare_vis\\triplets\\Switch to Design Layers tab_0_times_2916.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Confirm Layer Properties_1_times_1932.png",
+      "stem": "Confirm Layer Properties_1_times_1932",
+      "gt": 231,
+      "before": {
+        "pred": 211,
+        "tp": 171,
+        "fp": 40,
+        "fn": 60
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 39
+      },
+      "score": -226.0,
+      "triplet": "vw_compare_vis\\triplets\\Confirm Layer Properties_1_times_1932.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\initial_stair_3285.png",
+      "stem": "initial_stair_3285",
+      "gt": 244,
+      "before": {
+        "pred": 199,
+        "tp": 167,
+        "fp": 32,
+        "fn": 77
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 52
+      },
+      "score": -226.0,
+      "triplet": "vw_compare_vis\\triplets\\initial_stair_3285.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\initial_external walls_1462.png",
+      "stem": "initial_external walls_1462",
+      "gt": 204,
+      "before": {
+        "pred": 182,
+        "tp": 155,
+        "fp": 27,
+        "fn": 49
+      },
+      "after": {
+        "pred": 500,
+        "tp": 182,
+        "fp": 318,
+        "fn": 22
+      },
+      "score": -237.0,
+      "triplet": "vw_compare_vis\\triplets\\initial_external walls_1462.png"
+    }
+  ],
+  "all": [
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Door tool for door1_floor1.png",
+      "stem": "Activate Door tool for door1_floor1",
+      "gt": 210,
+      "before": {
+        "pred": 236,
+        "tp": 109,
+        "fp": 127,
+        "fn": 101
+      },
+      "after": {
+        "pred": 449,
+        "tp": 196,
+        "fp": 253,
+        "fn": 14
+      },
+      "score": 48.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Door tool for door1_floor1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2919_1.png",
+      "stem": "popup_window_2919_1",
+      "gt": 27,
+      "before": {
+        "pred": 31,
+        "tp": 15,
+        "fp": 16,
+        "fn": 12
+      },
+      "after": {
+        "pred": 27,
+        "tp": 27,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 40.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2919_1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Window tool for window1_floor1.png",
+      "stem": "Activate Window tool for window1_floor1",
+      "gt": 211,
+      "before": {
+        "pred": 243,
+        "tp": 118,
+        "fp": 125,
+        "fn": 93
+      },
+      "after": {
+        "pred": 450,
+        "tp": 198,
+        "fp": 252,
+        "fn": 13
+      },
+      "score": 33.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Window tool for window1_floor1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2991.png",
+      "stem": "popup_window_2991",
+      "gt": 25,
+      "before": {
+        "pred": 22,
+        "tp": 13,
+        "fp": 9,
+        "fn": 12
+      },
+      "after": {
+        "pred": 25,
+        "tp": 25,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 33.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2991.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_task_7f6b9d0b_0_times.png",
+      "stem": "masked_task_7f6b9d0b_0_times",
+      "gt": 27,
+      "before": {
+        "pred": 20,
+        "tp": 14,
+        "fp": 6,
+        "fn": 13
+      },
+      "after": {
+        "pred": 27,
+        "tp": 27,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 32.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_task_7f6b9d0b_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_task_53d4ed93_0_times.png",
+      "stem": "masked_task_53d4ed93_0_times",
+      "gt": 26,
+      "before": {
+        "pred": 20,
+        "tp": 14,
+        "fp": 6,
+        "fn": 12
+      },
+      "after": {
+        "pred": 26,
+        "tp": 26,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 30.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_task_53d4ed93_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_4539.png",
+      "stem": "popup_window_4539",
+      "gt": 26,
+      "before": {
+        "pred": 22,
+        "tp": 14,
+        "fp": 8,
+        "fn": 12
+      },
+      "after": {
+        "pred": 25,
+        "tp": 25,
+        "fp": 0,
+        "fn": 1
+      },
+      "score": 30.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_4539.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_1664.png",
+      "stem": "popup_window_1664",
+      "gt": 21,
+      "before": {
+        "pred": 20,
+        "tp": 11,
+        "fp": 9,
+        "fn": 10
+      },
+      "after": {
+        "pred": 21,
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 29.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_1664.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2526.png",
+      "stem": "popup_window_2526",
+      "gt": 24,
+      "before": {
+        "pred": 23,
+        "tp": 14,
+        "fp": 9,
+        "fn": 10
+      },
+      "after": {
+        "pred": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 29.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2526.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_6510.png",
+      "stem": "popup_window_6510",
+      "gt": 22,
+      "before": {
+        "pred": 24,
+        "tp": 13,
+        "fp": 11,
+        "fn": 9
+      },
+      "after": {
+        "pred": 22,
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 29.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_6510.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_3035.png",
+      "stem": "popup_window_3035",
+      "gt": 24,
+      "before": {
+        "pred": 22,
+        "tp": 14,
+        "fp": 8,
+        "fn": 10
+      },
+      "after": {
+        "pred": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 28.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_3035.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_Switch to Design Layers Tab_0_times.png",
+      "stem": "masked_Switch to Design Layers Tab_0_times",
+      "gt": 25,
+      "before": {
+        "pred": 18,
+        "tp": 13,
+        "fp": 5,
+        "fn": 12
+      },
+      "after": {
+        "pred": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 1
+      },
+      "score": 27.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_Switch to Design Layers Tab_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2502_1.png",
+      "stem": "popup_window_2502_1",
+      "gt": 21,
+      "before": {
+        "pred": 18,
+        "tp": 11,
+        "fp": 7,
+        "fn": 10
+      },
+      "after": {
+        "pred": 21,
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "score": 27.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2502_1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_task_e9cc4d9f_0_times.png",
+      "stem": "masked_task_e9cc4d9f_0_times",
+      "gt": 25,
+      "before": {
+        "pred": 20,
+        "tp": 14,
+        "fp": 6,
+        "fn": 11
+      },
+      "after": {
+        "pred": 24,
+        "tp": 24,
+        "fp": 0,
+        "fn": 1
+      },
+      "score": 26.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_task_e9cc4d9f_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_Confirm Creation of New Design Layer_0_times.png",
+      "stem": "masked_Confirm Creation of New Design Layer_0_times",
+      "gt": 13,
+      "before": {
+        "pred": 38,
+        "tp": 6,
+        "fp": 32,
+        "fn": 7
+      },
+      "after": {
+        "pred": 34,
+        "tp": 13,
+        "fp": 21,
+        "fn": 0
+      },
+      "score": 25.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_Confirm Creation of New Design Layer_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window.png",
+      "stem": "popup_window",
+      "gt": 21,
+      "before": {
+        "pred": 19,
+        "tp": 10,
+        "fp": 9,
+        "fn": 11
+      },
+      "after": {
+        "pred": 33,
+        "tp": 21,
+        "fp": 12,
+        "fn": 0
+      },
+      "score": 19.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_Click New\u2026_0_times.png",
+      "stem": "masked_Click New\u2026_0_times",
+      "gt": 25,
+      "before": {
+        "pred": 12,
+        "tp": 12,
+        "fp": 0,
+        "fn": 13
+      },
+      "after": {
+        "pred": 44,
+        "tp": 24,
+        "fp": 20,
+        "fn": 1
+      },
+      "score": 4.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_Click New\u2026_0_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Window tool for window3_floor1_1_times_3162.png",
+      "stem": "Activate Window tool for window3_floor1_1_times_3162",
+      "gt": 228,
+      "before": {
+        "pred": 227,
+        "tp": 117,
+        "fp": 110,
+        "fn": 111
+      },
+      "after": {
+        "pred": 500,
+        "tp": 206,
+        "fp": 294,
+        "fn": 22
+      },
+      "score": -6.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Window tool for window3_floor1_1_times_3162.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_task_e3532950_0_times_1.png",
+      "stem": "masked_task_e3532950_0_times_1",
+      "gt": 22,
+      "before": {
+        "pred": 58,
+        "tp": 13,
+        "fp": 45,
+        "fn": 9
+      },
+      "after": {
+        "pred": 95,
+        "tp": 22,
+        "fp": 73,
+        "fn": 0
+      },
+      "score": -10.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_task_e3532950_0_times_1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\masked_task_5dd8f2b2_1_times.png",
+      "stem": "masked_task_5dd8f2b2_1_times",
+      "gt": 14,
+      "before": {
+        "pred": 12,
+        "tp": 8,
+        "fp": 4,
+        "fn": 6
+      },
+      "after": {
+        "pred": 40,
+        "tp": 13,
+        "fp": 27,
+        "fn": 1
+      },
+      "score": -13.0,
+      "triplet": "vw_compare_vis\\triplets\\masked_task_5dd8f2b2_1_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2202.png",
+      "stem": "popup_window_2202",
+      "gt": 22,
+      "before": {
+        "pred": 57,
+        "tp": 14,
+        "fp": 43,
+        "fn": 8
+      },
+      "after": {
+        "pred": 95,
+        "tp": 22,
+        "fp": 73,
+        "fn": 0
+      },
+      "score": -14.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2202.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_1252.png",
+      "stem": "popup_window_1252",
+      "gt": 13,
+      "before": {
+        "pred": 10,
+        "tp": 8,
+        "fp": 2,
+        "fn": 5
+      },
+      "after": {
+        "pred": 40,
+        "tp": 13,
+        "fp": 27,
+        "fn": 0
+      },
+      "score": -15.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_1252.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_1753_1.png",
+      "stem": "popup_window_1753_1",
+      "gt": 14,
+      "before": {
+        "pred": 12,
+        "tp": 6,
+        "fp": 6,
+        "fn": 8
+      },
+      "after": {
+        "pred": 49,
+        "tp": 13,
+        "fp": 36,
+        "fn": 1
+      },
+      "score": -16.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_1753_1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_1358.png",
+      "stem": "popup_window_1358",
+      "gt": 13,
+      "before": {
+        "pred": 7,
+        "tp": 6,
+        "fp": 1,
+        "fn": 7
+      },
+      "after": {
+        "pred": 49,
+        "tp": 13,
+        "fp": 36,
+        "fn": 0
+      },
+      "score": -21.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_1358.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_2453.png",
+      "stem": "popup_window_2453",
+      "gt": 13,
+      "before": {
+        "pred": 7,
+        "tp": 6,
+        "fp": 1,
+        "fn": 7
+      },
+      "after": {
+        "pred": 49,
+        "tp": 13,
+        "fp": 36,
+        "fn": 0
+      },
+      "score": -21.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_2453.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_7617.png",
+      "stem": "popup_window_7617",
+      "gt": 13,
+      "before": {
+        "pred": 13,
+        "tp": 7,
+        "fp": 6,
+        "fn": 6
+      },
+      "after": {
+        "pred": 55,
+        "tp": 13,
+        "fp": 42,
+        "fn": 0
+      },
+      "score": -24.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_7617.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\popup_window_1463.png",
+      "stem": "popup_window_1463",
+      "gt": 13,
+      "before": {
+        "pred": 6,
+        "tp": 5,
+        "fp": 1,
+        "fn": 8
+      },
+      "after": {
+        "pred": 55,
+        "tp": 13,
+        "fp": 42,
+        "fn": 0
+      },
+      "score": -25.0,
+      "triplet": "vw_compare_vis\\triplets\\popup_window_1463.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Door tool_1_times_2046.png",
+      "stem": "Activate Door tool_1_times_2046",
+      "gt": 223,
+      "before": {
+        "pred": 224,
+        "tp": 147,
+        "fp": 77,
+        "fn": 76
+      },
+      "after": {
+        "pred": 500,
+        "tp": 195,
+        "fp": 305,
+        "fn": 28
+      },
+      "score": -132.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Door tool_1_times_2046.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Type Layer Name_2_times_2834.png",
+      "stem": "Type Layer Name_2_times_2834",
+      "gt": 229,
+      "before": {
+        "pred": 267,
+        "tp": 160,
+        "fp": 107,
+        "fn": 69
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 37
+      },
+      "score": -137.0,
+      "triplet": "vw_compare_vis\\triplets\\Type Layer Name_2_times_2834.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Edit Layer Properties_1_times_3035.png",
+      "stem": "Edit Layer Properties_1_times_3035",
+      "gt": 228,
+      "before": {
+        "pred": 294,
+        "tp": 172,
+        "fp": 122,
+        "fn": 56
+      },
+      "after": {
+        "pred": 500,
+        "tp": 193,
+        "fp": 307,
+        "fn": 35
+      },
+      "score": -143.0,
+      "triplet": "vw_compare_vis\\triplets\\Edit Layer Properties_1_times_3035.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Click New Layer button_1_times_1777.png",
+      "stem": "Click New Layer button_1_times_1777",
+      "gt": 222,
+      "before": {
+        "pred": 230,
+        "tp": 154,
+        "fp": 76,
+        "fn": 68
+      },
+      "after": {
+        "pred": 500,
+        "tp": 195,
+        "fp": 305,
+        "fn": 27
+      },
+      "score": -147.0,
+      "triplet": "vw_compare_vis\\triplets\\Click New Layer button_1_times_1777.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Create New Layer Dialog_1_times_7895.png",
+      "stem": "Create New Layer Dialog_1_times_7895",
+      "gt": 233,
+      "before": {
+        "pred": 252,
+        "tp": 163,
+        "fp": 89,
+        "fn": 70
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 41
+      },
+      "score": -161.0,
+      "triplet": "vw_compare_vis\\triplets\\Create New Layer Dialog_1_times_7895.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Place Window5_floor1.png",
+      "stem": "Place Window5_floor1",
+      "gt": 241,
+      "before": {
+        "pred": 247,
+        "tp": 168,
+        "fp": 79,
+        "fn": 73
+      },
+      "after": {
+        "pred": 500,
+        "tp": 194,
+        "fp": 306,
+        "fn": 47
+      },
+      "score": -175.0,
+      "triplet": "vw_compare_vis\\triplets\\Place Window5_floor1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Slab tool.png",
+      "stem": "Activate Slab tool",
+      "gt": 236,
+      "before": {
+        "pred": 242,
+        "tp": 167,
+        "fp": 75,
+        "fn": 69
+      },
+      "after": {
+        "pred": 500,
+        "tp": 194,
+        "fp": 306,
+        "fn": 42
+      },
+      "score": -177.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Slab tool.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Create Slab for Floor 1_1_times_1951.png",
+      "stem": "Create Slab for Floor 1_1_times_1951",
+      "gt": 221,
+      "before": {
+        "pred": 222,
+        "tp": 157,
+        "fp": 65,
+        "fn": 64
+      },
+      "after": {
+        "pred": 500,
+        "tp": 190,
+        "fp": 310,
+        "fn": 31
+      },
+      "score": -179.0,
+      "triplet": "vw_compare_vis\\triplets\\Create Slab for Floor 1_1_times_1951.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Place Window3_floor1_1_times_1267.png",
+      "stem": "Place Window3_floor1_1_times_1267",
+      "gt": 240,
+      "before": {
+        "pred": 242,
+        "tp": 166,
+        "fp": 76,
+        "fn": 74
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 48
+      },
+      "score": -180.0,
+      "triplet": "vw_compare_vis\\triplets\\Place Window3_floor1_1_times_1267.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Window tool_1_times_1039.png",
+      "stem": "Activate Window tool_1_times_1039",
+      "gt": 235,
+      "before": {
+        "pred": 237,
+        "tp": 167,
+        "fp": 70,
+        "fn": 68
+      },
+      "after": {
+        "pred": 500,
+        "tp": 191,
+        "fp": 309,
+        "fn": 44
+      },
+      "score": -191.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Window tool_1_times_1039.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Place Window3_floor2.png",
+      "stem": "Place Window3_floor2",
+      "gt": 242,
+      "before": {
+        "pred": 224,
+        "tp": 167,
+        "fp": 57,
+        "fn": 75
+      },
+      "after": {
+        "pred": 500,
+        "tp": 193,
+        "fp": 307,
+        "fn": 49
+      },
+      "score": -198.0,
+      "triplet": "vw_compare_vis\\triplets\\Place Window3_floor2.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Open Organization Dialog_1_times_2050.png",
+      "stem": "Open Organization Dialog_1_times_2050",
+      "gt": 242,
+      "before": {
+        "pred": 242,
+        "tp": 173,
+        "fp": 69,
+        "fn": 69
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 50
+      },
+      "score": -201.0,
+      "triplet": "vw_compare_vis\\triplets\\Open Organization Dialog_1_times_2050.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Draw Wall7_floor2_1_times_1802.png",
+      "stem": "Draw Wall7_floor2_1_times_1802",
+      "gt": 240,
+      "before": {
+        "pred": 237,
+        "tp": 175,
+        "fp": 62,
+        "fn": 65
+      },
+      "after": {
+        "pred": 500,
+        "tp": 194,
+        "fp": 306,
+        "fn": 46
+      },
+      "score": -206.0,
+      "triplet": "vw_compare_vis\\triplets\\Draw Wall7_floor2_1_times_1802.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\task_9a73eec4_1_times.png",
+      "stem": "task_9a73eec4_1_times",
+      "gt": 224,
+      "before": {
+        "pred": 199,
+        "tp": 157,
+        "fp": 42,
+        "fn": 67
+      },
+      "after": {
+        "pred": 500,
+        "tp": 188,
+        "fp": 312,
+        "fn": 36
+      },
+      "score": -208.0,
+      "triplet": "vw_compare_vis\\triplets\\task_9a73eec4_1_times.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Activate Stair tool_1_times_2133.png",
+      "stem": "Activate Stair tool_1_times_2133",
+      "gt": 244,
+      "before": {
+        "pred": 224,
+        "tp": 172,
+        "fp": 52,
+        "fn": 72
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 52
+      },
+      "score": -216.0,
+      "triplet": "vw_compare_vis\\triplets\\Activate Stair tool_1_times_2133.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\initial_layer_2175.png",
+      "stem": "initial_layer_2175",
+      "gt": 226,
+      "before": {
+        "pred": 194,
+        "tp": 159,
+        "fp": 35,
+        "fn": 67
+      },
+      "after": {
+        "pred": 500,
+        "tp": 189,
+        "fp": 311,
+        "fn": 37
+      },
+      "score": -216.0,
+      "triplet": "vw_compare_vis\\triplets\\initial_layer_2175.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Place Door1_floor2.png",
+      "stem": "Place Door1_floor2",
+      "gt": 238,
+      "before": {
+        "pred": 212,
+        "tp": 166,
+        "fp": 46,
+        "fn": 72
+      },
+      "after": {
+        "pred": 500,
+        "tp": 190,
+        "fp": 310,
+        "fn": 48
+      },
+      "score": -216.0,
+      "triplet": "vw_compare_vis\\triplets\\Place Door1_floor2.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Set Roof Bearing Inset_1_times_1436.png",
+      "stem": "Set Roof Bearing Inset_1_times_1436",
+      "gt": 240,
+      "before": {
+        "pred": 223,
+        "tp": 170,
+        "fp": 53,
+        "fn": 70
+      },
+      "after": {
+        "pred": 500,
+        "tp": 190,
+        "fp": 310,
+        "fn": 50
+      },
+      "score": -217.0,
+      "triplet": "vw_compare_vis\\triplets\\Set Roof Bearing Inset_1_times_1436.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Draw Wall18_floor1.png",
+      "stem": "Draw Wall18_floor1",
+      "gt": 240,
+      "before": {
+        "pred": 222,
+        "tp": 173,
+        "fp": 49,
+        "fn": 67
+      },
+      "after": {
+        "pred": 500,
+        "tp": 193,
+        "fp": 307,
+        "fn": 47
+      },
+      "score": -218.0,
+      "triplet": "vw_compare_vis\\triplets\\Draw Wall18_floor1.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Switch to Design Layers tab_0_times_2916.png",
+      "stem": "Switch to Design Layers tab_0_times_2916",
+      "gt": 234,
+      "before": {
+        "pred": 226,
+        "tp": 173,
+        "fp": 53,
+        "fn": 61
+      },
+      "after": {
+        "pred": 500,
+        "tp": 190,
+        "fp": 310,
+        "fn": 44
+      },
+      "score": -223.0,
+      "triplet": "vw_compare_vis\\triplets\\Switch to Design Layers tab_0_times_2916.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\Confirm Layer Properties_1_times_1932.png",
+      "stem": "Confirm Layer Properties_1_times_1932",
+      "gt": 231,
+      "before": {
+        "pred": 211,
+        "tp": 171,
+        "fp": 40,
+        "fn": 60
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 39
+      },
+      "score": -226.0,
+      "triplet": "vw_compare_vis\\triplets\\Confirm Layer Properties_1_times_1932.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\initial_stair_3285.png",
+      "stem": "initial_stair_3285",
+      "gt": 244,
+      "before": {
+        "pred": 199,
+        "tp": 167,
+        "fp": 32,
+        "fn": 77
+      },
+      "after": {
+        "pred": 500,
+        "tp": 192,
+        "fp": 308,
+        "fn": 52
+      },
+      "score": -226.0,
+      "triplet": "vw_compare_vis\\triplets\\initial_stair_3285.png"
+    },
+    {
+      "image": "W:\\hiwi\\Fine-tuning icon_detect\\dataset_split\\images\\test\\initial_external walls_1462.png",
+      "stem": "initial_external walls_1462",
+      "gt": 204,
+      "before": {
+        "pred": 182,
+        "tp": 155,
+        "fp": 27,
+        "fn": 49
+      },
+      "after": {
+        "pred": 500,
+        "tp": 182,
+        "fp": 318,
+        "fn": 22
+      },
+      "score": -237.0,
+      "triplet": "vw_compare_vis\\triplets\\initial_external walls_1462.png"
+    }
+  ]
+}
