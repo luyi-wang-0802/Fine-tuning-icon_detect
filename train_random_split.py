@@ -81,7 +81,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        default="icon_detect/model.pt",
+        default="first_finetune/weights/best.pt",
         help="Starting model checkpoint.",
     )
     parser.add_argument("--epochs", type=int, default=60, help="Number of training epochs.")
